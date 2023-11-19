@@ -1,7 +1,7 @@
 .data 
 
-.include "C:\Users\Gilson\Desktop\Bad_Ice_Cream\arquivos.data\background.data"
-.include "C:\Users\Gilson\Desktop\Bad_Ice_Cream\arquivos.data\frente1.data"
+.include "..\background.data"
+.include "..\frente1.data"
 
 .text
 SETUP:		la a0, background
@@ -9,23 +9,21 @@ SETUP:		la a0, background
 		li a2, 0
 		li a3, 0
 		call PRINT
-		# a0 = endereço da imagem
+		# a0 = endereÃ§o da imagem
 		# a1 = x (coluna)
 		# a2 = y (linha)
 		# a3 = frame (0 ou 1)
-		# t0 = endereço do bitmap display
-		# t1 = endereço da img
+		# t0 = endereÃ§o do bitmap display
+		# t1 = endereÃ§o da img
 		# t2 = contador da linha
 		# t3 = contador da coluna
 		# t4 = largura
 		# t5 = altura
 		
-GAME_LOOP:	xori s0, s0, 1
-		
-		la a0, frente1 # geração do personagem
+GAME_LOOP:	la a0, frente1 # geraÃ§Ã£o do personagem
 		li a1, 16
 		li a2, 0
-		li a3, s0
+		li a3, 0
 		call PRINT
 		
 PRINT:		li t0, 0xFF0
@@ -37,13 +35,13 @@ PRINT:		li t0, 0xFF0
 		mul t1, t1, a2
 		add t0, t0, t1
 		addi t1, a0, 8
-		# definição do endereço da imagem
+		# definiÃ§Ã£o do endereÃ§o da imagem
 		
 		#zerando os contadores
 		mv t2, zero 
 		mv t3, zero
 		
-		# definição da largura e da altura
+		# definiÃ§Ã£o da largura e da altura
 		lw t4, 0(a0)
 		lw t5, 4(a0)
 		
