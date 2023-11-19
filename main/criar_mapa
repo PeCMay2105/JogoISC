@@ -1,7 +1,8 @@
 .data 
-
-.include "..\background.data"
-.include "..\frente1.data"
+POSICAO_SORVETE: .half 64,64
+ANTIGA_POS_SORVETE: .half 64,64
+.include "background.data"
+.include "frente1.data"
 
 .text
 SETUP:		la a0, background
@@ -20,12 +21,67 @@ SETUP:		la a0, background
 		# t4 = largura
 		# t5 = altura
 		
-GAME_LOOP:	la a0, frente1 # geraÃ§Ã£o do personagem
-		li a1, 16
-		li a2, 0
-		li a3, 0
+GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla está sendo pressionada
+		xori s0,s0,1 #alternador de frames
+		la t0,POSICAO_SORVETE
+		la a0, frente1 # geraÃ§Ã£o do personagem
+		lh a1,0(t0)
+		lh a2,2(t0)
+		mv a3,s0
 		call PRINT
 		
+		li t0,0xFF200604
+		sw zero,0(t0)
+		j GAME_LOOP
+		
+TECLA_PRESS:	li t1,0xFF200000	# carrega o endereço de controle do KDMMIO
+		lw t0,0(t1)			# Le bit de Controle Teclado
+		andi t0,t0,0x0001		# mascara o bit menos significativo
+	   	beq t0,zero,RETURN   	   	# Se não há tecla pressionada então vai para FIM
+	  	lw t2,4(t1)  			# le o valor da tecla tecla
+		
+		li t0,'w'
+		beq t2,t0,ANDA_CIMA #se a tecla pressionada for w, anda para cima
+		li t0,'s'
+		beq t2,t0,ANDA_BAIXO #se a tecla pressionada for s, anda para baixo
+		li t0,'a'
+		beq t2,t0,ANDA_ESQ #se a tecla pressionada for a, anda para esquerda
+		li t0,'d'
+		beq t2,t0,ANDA_DIR #se a tecla pressionada for d, anda para a direita
+				
+RETURN: 	ret
+
+ANDA_CIMA:
+
+		la t0,POSICAO_SORVETE
+		#la t1,ANTIGA_POS_SORVETE código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
+		#lw t2,2(t0)
+		#sw t2,2(t1)
+		
+		lh t1,2(t0)
+		addi t1,t1,-8
+		sh t1,2(t0)
+		ret				# retorna
+
+ANDA_BAIXO:	la t0,POSICAO_SORVETE
+		lh t1,2(t0)
+		addi t1,t1,8
+		sh t1,2(t0)
+		ret
+		
+ANDA_DIR:	la t0,POSICAO_SORVETE
+		lh t1,0(t0)
+		addi t1,t1,8
+		sh t1,0(t0)
+		ret
+		
+ANDA_ESQ:	la t0,POSICAO_SORVETE
+		lh t1,0(t0)
+		addi t1,t1,-8
+		sh t1,0(t0)
+		ret
+		
+						
 PRINT:		li t0, 0xFF0
 		add t0, t0, a3
 		slli t0, t0, 20
