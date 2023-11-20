@@ -9,7 +9,7 @@ ANTIGA_POS_SORVETE: .half 64,64
 .include "bloco_de_gelo.data"
 
 .text
-<<<<<<< HEAD
+
 	la s0,NUM		# define o endere�o do n�mero de notas
 	lw s1,0(s0)		# le o numero de notas
 	la s0,NOTAS		# define o endere�o das notas
