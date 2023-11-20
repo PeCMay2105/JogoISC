@@ -1,12 +1,19 @@
 .data 
 POSICAO_SORVETE: .half 64,64
+<<<<<<< HEAD
 NUM: .word 111
 NOTAS: 52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,59,258,60,258,57,2068,47,258,52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,55,258,62,258,60,2584,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,258
 ANTIGA_POS_SORVETE: .half 64,64
 .include "background.data"
+=======
+ANTIGA_POS_SORVETE: .half 64, 64
+.include "mapa.data"
+>>>>>>> 88850c059508dcf3575c07c5016a692d10d5f907
 .include "frente1.data"
+.include "bloco_de_gelo.data"
 
 .text
+<<<<<<< HEAD
 	la s0,NUM		# define o endereï¿½o do nï¿½mero de notas
 	lw s1,0(s0)		# le o numero de notas
 	la s0,NOTAS		# define o endereï¿½o das notas
@@ -35,9 +42,14 @@ FIM_MUSICA:	li a0,40		# define a nota
 		
 		
 SETUP:		la a0, background
+=======
+SETUP:		la a0, mapa
+>>>>>>> 88850c059508dcf3575c07c5016a692d10d5f907
 		li a1, 0
 		li a2, 0
 		li a3, 0
+		call PRINT
+		li a3, 1
 		call PRINT
 		# a0 = endereÃ§o da imagem
 		# a1 = x (coluna)
@@ -62,6 +74,15 @@ GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estï¿½
 		
 		li t0,0xFF200604
 		sw zero,0(t0)
+			
+		la t0, ANTIGA_POS_SORVETE
+		la a0, bloco_de_gelo # apagar o rastro do personagem
+		lh a1,0(t0)
+		lh a2,2(t0)
+		mv a3,s0
+		xori a3, a3, 1
+		call PRINT
+		
 		j GAME_LOOP
 		
 TECLA_PRESS:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
@@ -84,30 +105,48 @@ RETURN: 	ret
 ANDA_CIMA:
 
 		la t0,POSICAO_SORVETE
+<<<<<<< HEAD
 		#la t1,ANTIGA_POS_SORVETE cï¿½digo para salvar a antiga posiï¿½ï¿½o do personagem e substituï¿½la por um recorte do fundo
 		#lw t2,2(t0)
 		#sw t2,2(t1)
+=======
+		la t1,ANTIGA_POS_SORVETE #código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
+		lh t2,2(t0)
+		sh t2,2(t1)
+>>>>>>> 88850c059508dcf3575c07c5016a692d10d5f907
 		
 		lh t1,2(t0)
-		addi t1,t1,-8
+		addi t1,t1,-16
 		sh t1,2(t0)
 		ret				# retorna
 
 ANDA_BAIXO:	la t0,POSICAO_SORVETE
+		la t1,ANTIGA_POS_SORVETE #código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
+		lh t2,2(t0)
+		sh t2,2(t1)
+		
 		lh t1,2(t0)
-		addi t1,t1,8
+		addi t1,t1,16
 		sh t1,2(t0)
 		ret
 		
 ANDA_DIR:	la t0,POSICAO_SORVETE
+		la t1,ANTIGA_POS_SORVETE #código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
+		lh t2,2(t0)
+		sh t2,2(t1)
+		
 		lh t1,0(t0)
-		addi t1,t1,8
+		addi t1,t1,16
 		sh t1,0(t0)
 		ret
 		
 ANDA_ESQ:	la t0,POSICAO_SORVETE
+		la t1,ANTIGA_POS_SORVETE #código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
+		lh t2,2(t0)
+		sh t2,2(t1)
+		
 		lh t1,0(t0)
-		addi t1,t1,-8
+		addi t1,t1,-16
 		sh t1,0(t0)
 		ret
 		
