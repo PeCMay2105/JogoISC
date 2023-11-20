@@ -1,14 +1,17 @@
 .data 
 POSICAO_SORVETE: .half 64,64
-ANTIGA_POS_SORVETE: .half 64,64
-.include "background.data"
+ANTIGA_POS_SORVETE: .half 64, 64
+.include "mapa.data"
 .include "frente1.data"
+.include "bloco_de_gelo.data"
 
 .text
-SETUP:		la a0, background
+SETUP:		la a0, mapa
 		li a1, 0
 		li a2, 0
 		li a3, 0
+		call PRINT
+		li a3, 1
 		call PRINT
 		# a0 = endereÃ§o da imagem
 		# a1 = x (coluna)
@@ -32,6 +35,15 @@ GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla está s
 		
 		li t0,0xFF200604
 		sw zero,0(t0)
+			
+		la t0, ANTIGA_POS_SORVETE
+		la a0, bloco_de_gelo # apagar o rastro do personagem
+		lh a1,0(t0)
+		lh a2,2(t0)
+		mv a3,s0
+		xori a3, a3, 1
+		call PRINT
+		
 		j GAME_LOOP
 		
 TECLA_PRESS:	li t1,0xFF200000	# carrega o endereço de controle do KDMMIO
@@ -54,30 +66,42 @@ RETURN: 	ret
 ANDA_CIMA:
 
 		la t0,POSICAO_SORVETE
-		#la t1,ANTIGA_POS_SORVETE código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
-		#lw t2,2(t0)
-		#sw t2,2(t1)
+		la t1,ANTIGA_POS_SORVETE #código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
+		lh t2,2(t0)
+		sh t2,2(t1)
 		
 		lh t1,2(t0)
-		addi t1,t1,-8
+		addi t1,t1,-16
 		sh t1,2(t0)
 		ret				# retorna
 
 ANDA_BAIXO:	la t0,POSICAO_SORVETE
+		la t1,ANTIGA_POS_SORVETE #código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
+		lh t2,2(t0)
+		sh t2,2(t1)
+		
 		lh t1,2(t0)
-		addi t1,t1,8
+		addi t1,t1,16
 		sh t1,2(t0)
 		ret
 		
 ANDA_DIR:	la t0,POSICAO_SORVETE
+		la t1,ANTIGA_POS_SORVETE #código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
+		lh t2,2(t0)
+		sh t2,2(t1)
+		
 		lh t1,0(t0)
-		addi t1,t1,8
+		addi t1,t1,16
 		sh t1,0(t0)
 		ret
 		
 ANDA_ESQ:	la t0,POSICAO_SORVETE
+		la t1,ANTIGA_POS_SORVETE #código para salvar a antiga posição do personagem e substituíla por um recorte do fundo
+		lh t2,2(t0)
+		sh t2,2(t1)
+		
 		lh t1,0(t0)
-		addi t1,t1,-8
+		addi t1,t1,-16
 		sh t1,0(t0)
 		ret
 		
