@@ -1,8 +1,9 @@
 .data 
-POSICAO_SORVETE: .half 64,64
+POSICAO_SORVETE: .half 144, 160
+CONTADOR_HORIZONTAL: .byte 10
 NUM: .word 111
 NOTAS: 52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,59,258,60,258,57,2068,47,258,52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,55,258,62,258,60,2584,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,258
-ANTIGA_POS_SORVETE: .half 64,64
+ANTIGA_POS_SORVETE: .half 144,160
 .include "mapa.data"
 .include "frente1.data"
 .include "bloco_de_gelo.data"
@@ -119,7 +120,18 @@ ANDA_BAIXO:	la t0,POSICAO_SORVETE
 		sh t1,2(t0)
 		ret
 		
-ANDA_DIR:	la t0,POSICAO_SORVETE
+ANDA_DIR:	la t0, CONTADOR_HORIZONTAL
+		lb t1, 0(t0)
+		li t2, 18
+		beq t1, t2, GAME_LOOP
+
+		# aumentar o contador_hoizontal em 1
+		la t0, CONTADOR_HORIZONTAL
+		lb t1, 0(t0)
+		addi t1, t1, 1
+		sb t1, 0(t0)
+
+		la t0,POSICAO_SORVETE
 		la t1,ANTIGA_POS_SORVETE #c�digo para salvar a antiga posi��o do personagem e substitu�la por um recorte do fundo
 		lw t2,0(t0)
 		sw t2,0(t1)
@@ -129,7 +141,18 @@ ANDA_DIR:	la t0,POSICAO_SORVETE
 		sh t1,0(t0)
 		ret
 		
-ANDA_ESQ:	la t0,POSICAO_SORVETE
+ANDA_ESQ:	la t0, CONTADOR_HORIZONTAL
+		lb t1, 0(t0)
+		li t2, 3
+		beq t1, t2, GAME_LOOP
+		
+		# diminuir o contador_hoizontal em 1
+		la t0, CONTADOR_HORIZONTAL
+		lb t1, 0(t0)
+		addi t1, t1, -1
+		sb t1, 0(t0)
+		
+		la t0,POSICAO_SORVETE
 		la t1,ANTIGA_POS_SORVETE #c�digo para salvar a antiga posi��o do personagem e substitu�la por um recorte do fundo
 		lw t2,0(t0)
 		sw t2,0(t1)
