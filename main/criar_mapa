@@ -1,12 +1,23 @@
 .data 
 POSICAO_SORVETE: .half 144, 160
+SENTIDO: .word 0
 CONTADOR_HORIZONTAL: .byte 10
+CONTADOR_VERTICAL: .byte 4
 NUM: .word 111
 NOTAS: 52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,59,258,60,258,57,2068,47,258,52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,55,258,62,258,60,2584,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,258
 ANTIGA_POS_SORVETE: .half 144,160
 .include "mapa.data"
 .include "frente1.data"
+.include "direita1.data"
+.include "costas1.data"
+.include "esquerda1.data"
 .include "bloco_de_gelo.data"
+.include "gf1.data"
+.include "gf2.data"
+.include "gf3.data"
+.include "gf4.data"
+.include "gf5.data"
+
 
 .text
 	j SETUP
@@ -27,7 +38,7 @@ MUSICA:	beq t0,s1, FIM_MUSICA		# contador chegou no final? entï¿½o  vï¿½ para FI
 	ecall			# realiza uma pausa de a0 ms
 	addi s0,s0,8		# incrementa para o endereï¿½o da prï¿½xima nota
 	addi t0,t0,1		# incrementa o contador de notas
-	j MUSICA		# volta ao loop
+	j GAME_LOOP		# volta ao loop
 	
 FIM_MUSICA:	li a0,40		# define a nota
 		li a1,1500		# define a duraï¿½ï¿½o da nota em ms
@@ -38,7 +49,6 @@ FIM_MUSICA:	li a0,40		# define a nota
 		
 		
 SETUP:		la a0, mapa
-
 		li a1, 0
 		li a2, 0
 		li a3, 0
@@ -56,12 +66,17 @@ SETUP:		la a0, mapa
 		# t4 = largura
 		# t5 = altura
 		
+		# carrega o sentido para o qual o personagem está olhando(inicialmente, para frente)
+		la t0, frente1
+		la t1, SENTIDO
+		sw t0, 0(t1)		
 		
 GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estï¿½ sendo pressionada
 		xori s0,s0,1 #alternador de frames
 		
+		la t1, SENTIDO
+		lw a0, 0(t1)
 		la t0,POSICAO_SORVETE
-		la a0, frente1 # geraÃ§Ã£o do personagem
 		lh a1,0(t0)
 		lh a2,2(t0)
 		mv a3,s0
@@ -94,11 +109,27 @@ TECLA_PRESS:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
 		beq t2,t0,ANDA_ESQ #se a tecla pressionada for a, anda para esquerda
 		li t0,'d'
 		beq t2,t0,ANDA_DIR #se a tecla pressionada for d, anda para a direita
+		li t0, ' '
+		beq t2, t0, GELO
 				
 RETURN: 	ret
 
-ANDA_CIMA:
+ANDA_CIMA:	# mudança da direção p onde o personagem ta olhando
+		la t0, costas1
+		la t1, SENTIDO
+		sw t0, 0(t1)
 
+		la t0, CONTADOR_VERTICAL
+		lb t1, 0(t0)
+		li t2, 14
+		beq t1, t2, GAME_LOOP
+		
+		#aumento do contador horizontal em 1
+		la t0, CONTADOR_VERTICAL
+		lb t1, 0(t0)
+		addi t1, t1, 1
+		sb t1, 0(t0)
+		
 		la t0,POSICAO_SORVETE
 
 		la t1,ANTIGA_POS_SORVETE #cï¿½digo para salvar a antiga posiï¿½ï¿½o do personagem e substituï¿½la por um recorte do fundo
@@ -110,7 +141,22 @@ ANDA_CIMA:
 		sh t1,2(t0)
 		ret				# retorna
 
-ANDA_BAIXO:	la t0,POSICAO_SORVETE
+ANDA_BAIXO:	# mudança da direção p onde o personagem ta olhando
+		la t0, frente1
+		la t1, SENTIDO
+		sw t0, 0(t1)
+
+		la t0, CONTADOR_VERTICAL
+		lb t1, 0(t0)
+		beqz t1, GAME_LOOP
+		
+		#subtração do contador horizontal em 1
+		la t0, CONTADOR_VERTICAL
+		lb t1, 0(t0)
+		addi t1, t1, -1
+		sb t1, 0(t0)
+
+		la t0,POSICAO_SORVETE
 		la t1,ANTIGA_POS_SORVETE #cï¿½digo para salvar a antiga posiï¿½ï¿½o do personagem e substituï¿½la por um recorte do fundo
 		lw t2,0(t0)
 		sw t2,0(t1)
@@ -120,7 +166,12 @@ ANDA_BAIXO:	la t0,POSICAO_SORVETE
 		sh t1,2(t0)
 		ret
 		
-ANDA_DIR:	la t0, CONTADOR_HORIZONTAL
+ANDA_DIR:	# mudança da direção p onde o personagem ta olhando
+		la t0, direita1
+		la t1, SENTIDO
+		sw t0, 0(t1)
+
+		la t0, CONTADOR_HORIZONTAL
 		lb t1, 0(t0)
 		li t2, 18
 		beq t1, t2, GAME_LOOP
@@ -141,7 +192,12 @@ ANDA_DIR:	la t0, CONTADOR_HORIZONTAL
 		sh t1,0(t0)
 		ret
 		
-ANDA_ESQ:	la t0, CONTADOR_HORIZONTAL
+ANDA_ESQ:	# mudança da direção p onde o personagem ta olhando
+		la t0, esquerda1
+		la t1, SENTIDO
+		sw t0, 0(t1)
+
+		la t0, CONTADOR_HORIZONTAL
 		lb t1, 0(t0)
 		li t2, 3
 		beq t1, t2, GAME_LOOP
@@ -200,4 +256,86 @@ PRINT_LINHA:	lw t6, 0(t1)
 		bgt t5, t2, PRINT_LINHA
 		ret
 		
-
+GELO:		la t0,SENTIDO
+		lw t1, 0(t0)
+		la t2, frente1
+		beq t1, t2, GELO_P_BAIXO
+		
+		ret 
+		
+GELO_P_BAIXO:	xori s0,s0,1 #alternador de frames
+		la a0, gf1
+		la t0, POSICAO_SORVETE
+		lh a1, 0(t0)
+		lh a2, 2(t0)
+		mv a3, s0
+		call PRINT
+		
+		li a7, 32
+		li a0, 50
+		ecall
+		
+		li t0,0xFF200604 # alterador de frames
+		sw s0,0(t0)
+		
+		xori s0,s0,1 #alternador de frames
+		la a0, gf2
+		la t0, POSICAO_SORVETE
+		lh a1, 0(t0)
+		lh a2, 2(t0)
+		mv a3, s0
+		call PRINT
+		
+		li a7, 32
+		li a0, 50
+		ecall
+		
+		li t0,0xFF200604 # alterador de frames
+		sw s0,0(t0)
+		
+		xori s0,s0,1 #alternador de frames
+		la a0, gf3
+		la t0, POSICAO_SORVETE
+		lh a1, 0(t0)
+		lh a2, 2(t0)
+		mv a3, s0
+		call PRINT
+		
+		li a7, 32
+		li a0, 50
+		ecall
+		
+		li t0,0xFF200604 # alterador de frames
+		sw s0,0(t0)
+		
+		xori s0,s0,1 #alternador de frames
+		la a0, gf4
+		la t0, POSICAO_SORVETE
+		lh a1, 0(t0)
+		lh a2, 2(t0)
+		mv a3, s0
+		call PRINT
+		
+		li a7, 32
+		li a0, 50
+		ecall
+		
+		li t0,0xFF200604 # alterador de frames
+		sw s0,0(t0)
+		
+		xori s0,s0,1 #alternador de frames
+		la a0, gf5
+		la t0, POSICAO_SORVETE
+		lh a1, 0(t0)
+		lh a2, 2(t0)
+		mv a3, s0
+		call PRINT
+		
+		li a7, 32
+		li a0, 50
+		ecall
+		
+		li t0,0xFF200604 # alterador de frames
+		sw s0,0(t0)
+		
+		j GAME_LOOP
