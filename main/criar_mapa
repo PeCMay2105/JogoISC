@@ -1,7 +1,7 @@
 .data 
 POSICAO_SORVETE: .half 144, 160
 DIRECAO_SORVETE: frente1
-ARRAY: .word 0, 0, 0, 0, 0
+ARRAY: .word 0, 0, 0, 0, 0, 0 # array pra fazer a animação do boneco
 SENTIDO: .word 0
 CONTADOR_HORIZONTAL: .byte 10
 CONTADOR_VERTICAL: .byte 4
@@ -83,12 +83,17 @@ SETUP:		la a0, mapa
 		# t4 = largura
 		# t5 = altura
 		
+		# carrega o sentido para o qual o personagem est? olhando(inicialmente, para frente)
+		la t0, frente1
+		la t1, SENTIDO
+		sw t0, 0(t1)
 		
 GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estï¿½ sendo pressionada
 		xori s0,s0,1 #alternador de frames
 		
 		la t0,POSICAO_SORVETE #carrega a posicao atual do sorvete em t0
-		la a0, frente1 #carrega a sprite do sorvete virado para frente
+		la t1, SENTIDO
+		lw a0, 0(t1) #carrega a sprite do sorvete de acordo com o sentido
 		lh a1,0(t0) #carrega a posicao x do sorvete para a1, que Ã© o registrador requisitado pelo procedimento "print"
 		lh a2,2(t0) # carrega a posicao y do sorvete para a2, que Ã© o registrador requisitado pelo procedimento "print"
 		mv a3,s0 #define o frame utilizado
@@ -121,7 +126,7 @@ TECLA_PRESS:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
 		li t0,'d'
 		beq t2,t0,ANDA_DIR #se a tecla pressionada for d, anda para a direita
 		li t0, ' '
-		#beq t2, t0, GELO_ANIMACAO
+		beq t2, t0, GELO_ANIMACAO # se for espaço, mostra o bonequinho cuspindo
 		
 RETURN:		ret
 
@@ -269,4 +274,115 @@ PRINT_LINHA:	lw t6, 0(t1)
 		bgt t5, t2, PRINT_LINHA
 		ret
 		
+GELO_ANIMACAO:	la t0,SENTIDO
+		lw t1, 0(t0)
+		la t2, frente1 # verifica qual o sentido que o bonequinho ta olhando
+		beq t1, t2, GELO_P_BAIXO
+		
+		la t2, costas1
+		beq t1, t2, GELO_P_CIMA
+		
+		la t2, esquerda1
+		beq t1, t2, GELO_P_ESQ
+		
+		la t2, direita1
+		beq t1, t2, GELO_P_DIR
+		ret 
+		
+GELO_P_BAIXO:	la t0, ARRAY # carregamento dos frames do personagem no array usado na animacao
+		la t1, gf1
+		sw t1, 0(t0)
+		la t1, gf2
+		sw t1, 4(t0)
+		la t1, gf3
+		sw t1, 8(t0)
+		la t1, gf4
+		sw t1, 12(t0)
+		la t1, gf5
+		sw t1, 16(t0)
+		la t2, SENTIDO
+		lw t1, 0(t2)
+		sw t1, 20(t0)
+		
+		la a4, ARRAY
+		li a5, 5
+		call ANIMACAO
 
+GELO_P_CIMA:	la t0, ARRAY # carregamento dos frames do personagem no array usado na animacao
+		la t1, gc1
+		sw t1, 0(t0)
+		la t1, gc2
+		sw t1, 4(t0)
+		la t1, gc3
+		sw t1, 8(t0)
+		la t1, gc4
+		sw t1, 12(t0)
+		la t1, gc5
+		sw t1, 16(t0)
+		la t2, SENTIDO
+		lw t1, 0(t2)
+		sw t1, 20(t0)
+		
+		la a4, ARRAY
+		li a5, 5
+		call ANIMACAO
+
+
+GELO_P_ESQ:	la t0, ARRAY # carregamento dos frames do personagem no array usado na animacao
+		la t1, ge1
+		sw t1, 0(t0)
+		la t1, ge2
+		sw t1, 4(t0)
+		la t1, ge3
+		sw t1, 8(t0)
+		la t1, ge4
+		sw t1, 12(t0)
+		la t1, ge5
+		sw t1, 16(t0)
+		la t2, SENTIDO
+		lw t1, 0(t2)
+		sw t1, 20(t0)
+		
+		la a4, ARRAY
+		li a5, 5
+		call ANIMACAO
+
+
+GELO_P_DIR:	la t0, ARRAY # carregamento dos frames do personagem no array usado na animacao
+		la t1, gd1
+		sw t1, 0(t0)
+		la t1, gd2
+		sw t1, 4(t0)
+		la t1, gd3
+		sw t1, 8(t0)
+		la t1, gd4
+		sw t1, 12(t0)
+		la t1, gd5
+		sw t1, 16(t0)
+		la t2, SENTIDO
+		lw t1, 0(t2)
+		sw t1, 20(t0)
+		
+		la a4, ARRAY
+		li a5, 5
+		call ANIMACAO
+		
+ANIMACAO:	xori s0,s0,1 #alternador de frames
+		lw  a0, 0(a4)
+		la t0, POSICAO_SORVETE
+		lh a1, 0(t0)
+		lh a2, 2(t0)
+		mv a3, s0
+		call PRINT
+		
+		li a7, 32
+		li a0, 50
+		ecall
+		
+		li t0,0xFF200604 # alterador de frames
+		sw s0,0(t0)
+		
+		addi a4, a4, 4
+		addi a5, a5, -1
+		beqz a5, GAME_LOOP
+		j ANIMACAO
