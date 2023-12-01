@@ -1,5 +1,6 @@
 .data 
 POSICAO_SORVETE: .half 144, 160
+DIRECAO_SORVETE: frente1
 ARRAY: .word 0, 0, 0, 0, 0
 SENTIDO: .word 0
 CONTADOR_HORIZONTAL: .byte 10
@@ -86,16 +87,17 @@ SETUP:		la a0, mapa
 GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla est� sendo pressionada
 		xori s0,s0,1 #alternador de frames
 		
-		la t0,POSICAO_SORVETE
-		lh a1,0(t0)
-		lh a2,2(t0)
-		mv a3,s0
+		la t0,POSICAO_SORVETE #carrega a posicao atual do sorvete em t0
+		la a0, frente1 #carrega a sprite do sorvete virado para frente
+		lh a1,0(t0) #carrega a posicao x do sorvete para a1, que é o registrador requisitado pelo procedimento "print"
+		lh a2,2(t0) # carrega a posicao y do sorvete para a2, que é o registrador requisitado pelo procedimento "print"
+		mv a3,s0 #define o frame utilizado
 		call PRINT
 		li t0,0xFF200604 # alterador de frames
 		sw s0,0(t0)
 		
 		la t0,ANTIGA_POS_SORVETE
-		la a0, bloco_de_gelo # geração do personagem
+		la a0, bloco_de_neve # geração do personagem
 		lh a1,0(t0)
 		lh a2,2(t0)
 		mv a3,s0
@@ -119,7 +121,7 @@ TECLA_PRESS:	li t1,0xFF200000	# carrega o endere�o de controle do KDMMIO
 		li t0,'d'
 		beq t2,t0,ANDA_DIR #se a tecla pressionada for d, anda para a direita
 		li t0, ' '
-		beq t2, t0, GELO_ANIMACAO
+		#beq t2, t0, GELO_ANIMACAO
 		
 RETURN:		ret
 
@@ -131,7 +133,7 @@ ANDA_CIMA:	# mudan�a da dire��o p onde o personagem ta olhando
 		la t0, CONTADOR_VERTICAL
 		lb t1, 0(t0)
 		li t2, 14
-		beq t1, t2, GAME_LOOP
+		beq t1, t2, GAME_LOOP # se a posição y do personagem for igual a 14, o fluxo volta ao game_loop
 		
 		#aumento do contador horizontal em 1
 		la t0, CONTADOR_VERTICAL
@@ -259,7 +261,7 @@ PRINT_LINHA:	lw t6, 0(t1)
 		
 		blt t3, t4, PRINT_LINHA # verifica se terminou de desenhar a linha
 		
-		addi t0, t0,  320 # pula p proxima linha
+		addi t0, t0,320 # pula p proxima linha
 		sub t0, t0, t4 
 		
 		mv t3, zero # zero o contador de coluna
