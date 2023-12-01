@@ -12,6 +12,7 @@ ANTIGA_POS_SORVETE: .half 144,160
 .include "direita1.data"
 .include "costas1.data"
 .include "esquerda1.data"
+.include "bloco_de_neve.data"
 .include "bloco_de_gelo.data"
 .include "gf1.data"
 .include "gf2.data"
@@ -125,9 +126,9 @@ TECLA_PRESS:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
 		li t0,'d'
 		beq t2,t0,ANDA_DIR #se a tecla pressionada for d, anda para a direita
 		li t0, ' '
-		beq t2, t0, GELO
-				
-RETURN: 	ret
+		beq t2, t0, GELO_ANIMACAO
+		
+RETURN:		ret
 
 ANDA_CIMA:	# mudança da direção p onde o personagem ta olhando
 		la t0, costas1
@@ -271,7 +272,7 @@ PRINT_LINHA:	lw t6, 0(t1)
 		bgt t5, t2, PRINT_LINHA
 		ret
 		
-GELO:		la t0,SENTIDO
+GELO_ANIMACAO:	la t0,SENTIDO
 		lw t1, 0(t0)
 		la t2, frente1
 		beq t1, t2, GELO_P_BAIXO
@@ -296,7 +297,11 @@ GELO_P_BAIXO:	la t0, ARRAY # carregamento dos frames do personagem no array usad
 		la t1, gf4
 		sw t1, 12(t0)
 		la t1, gf5
-		sw t1, 16(t0)
+		sw t1, 16(t0)5
+		la t2, SENTIDO
+		lw t1, 0(t2)
+		sw t1, 20(t0)
+		
 		la a4, ARRAY
 		li a5, 5
 		call ANIMACAO
@@ -312,6 +317,10 @@ GELO_P_CIMA:	la t0, ARRAY # carregamento dos frames do personagem no array usado
 		sw t1, 12(t0)
 		la t1, gc5
 		sw t1, 16(t0)
+		la t2, SENTIDO
+		lw t1, 0(t2)
+		sw t1, 20(t0)
+		
 		la a4, ARRAY
 		li a5, 5
 		call ANIMACAO
@@ -327,6 +336,10 @@ GELO_P_DIR:	la t0, ARRAY # carregamento dos frames do personagem no array usado 
 		sw t1, 12(t0)
 		la t1, gd5
 		sw t1, 16(t0)
+		la t2, SENTIDO
+		lw t1, 0(t2)
+		sw t1, 20(t0)
+		
 		la a4, ARRAY
 		li a5, 5
 		call ANIMACAO
@@ -342,6 +355,10 @@ GELO_P_ESQ:	la t0, ARRAY # carregamento dos frames do personagem no array usado 
 		sw t1, 12(t0)
 		la t1, ge5
 		sw t1, 16(t0)
+		la t2, SENTIDO
+		lw t1, 0(t2)
+		sw t1, 20(t0)
+		
 		la a4, ARRAY
 		li a5, 5
 		call ANIMACAO
@@ -363,5 +380,24 @@ ANIMACAO:	xori s0,s0,1 #alternador de frames
 		
 		addi a4, a4, 4
 		addi a5, a5, -1
-		beqz a5, GAME_LOOP
+		beqz a5, GELO
 		j ANIMACAO
+		
+GELO:		la t0,SENTIDO
+		lw t1, 0(t0)
+		la t2, frente1
+		beq t1, t2, P_BAIXO
+		
+		#la t2, costas1
+		#beq t1, t2, P_CIMA
+		
+		#la t2, esquerda1
+		#beq t1, t2, P_ESQ
+		
+		#la t2, direita1
+		#beq t1, t2, P_DIR
+		#ret
+		
+P_BAIXO:	# verificar se embaixo tem gelo pra ver se quebra ou põe
+		#criar algoritmo pra por o gelo
+		#criar algoritmo pra quebrar o gelo
