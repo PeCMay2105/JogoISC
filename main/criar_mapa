@@ -1,12 +1,19 @@
 .data 
 POSICAO_SORVETE: .half 144, 160
+A1_intermediario: .word 0
+A0_intermediario: .word 0
+A2_intermediario: .word 0
+A3_intermediario: .word 0
+
+
 DIRECAO_SORVETE: frente1
-ARRAY: .word 0, 0, 0, 0, 0, 0 # array pra fazer a animaÁ„o do boneco
+ARRAY: .word 0, 0, 0, 0, 0, 0 # array pra fazer a animacao do boneco
 SENTIDO: .word 0
 CONTADOR_HORIZONTAL: .byte 10
 CONTADOR_VERTICAL: .byte 4
 NUM: .word 111
 NOTAS: 52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,59,258,60,258,57,2068,47,258,52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,55,258,62,258,60,2584,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,258
+NOTA_ATUAL:
 ANTIGA_POS_SORVETE: .half 144,160
 BLOCOS_P_FIM: .word 0
 .include "mapa.data"
@@ -38,32 +45,49 @@ BLOCOS_P_FIM: .word 0
 .include "ge5.data"
 
 .text
-	j SETUP
-	la s0,NUM		# define o endereÔøΩo do nÔøΩmero de notas
-	lw s1,0(s0)		# le o numero de notas
-	la s0,NOTAS		# define o endereÔøΩo das notas
-	li t0,0			# zera o contador de notas
-	li a2,68		# define o instrumento
-	li a3,127		# define o volume
 
-MUSICA:	beq t0,s1, FIM_MUSICA	# contador chegou no final? entÔøΩo  vÔøΩ para FIM
-	lw a0,0(s0)		# le o valor da nota
-	lw a1,4(s0)		# le a duracao da nota
-	li a7,31		# define a chamada de syscall
-	ecall			# toca a nota
-	mv a0,a1		# passa a duraÔøΩÔøΩo da nota para a pausa
-	li a7,32		# define a chamada de syscal 
-	ecall			# realiza uma pausa de a0 ms
-	addi s0,s0,8		# incrementa para o endereÔøΩo da prÔøΩxima nota
-	addi t0,t0,1		# incrementa o contador de notas
-	j MUSICA		# volta ao loop
+##### REGISTRADORES DISPON√çVEIS PARA PROCEDIMENTOS SIMULT√ÇNEOS AO PRINT:
+# 		t6 (√© usado na movimenta√ß√£o do personagem)
+#		a4
+#		a5
+#		a6
+#		s2
+#		s3
+#		s4
+#		s5
+#		s6
+#		s7
+#		s8
+#		s9
+#		s10
+#		s11
+
+
+
+
 	
-FIM_MUSICA:	li a0,40		# define a nota
-		li a1,1500		# define a duraÔøΩÔøΩo da nota em ms
-		li a2,127		# define o instrumento
-		li a3,127		# define o volume
-		li a7,33		# define o syscall
-		ecall			# toca a nota
+	
+## Setup da m√∫sica
+SETUP_MUSICA:
+		la s0,NUM		# define o endereÔøΩo do nÔøΩmero de notas
+		lw s4,0(s0)		# le o numero de notas
+		la s0,NOTAS		# define o endereÔøΩo das notas
+		li a4,0			# zera o contador de notas
+		
+		j SETUP
+		
+#MUSICA:	beq t0,s1, FIM_MUSICA	# contador chegou no final? entÔøΩo  vÔøΩ para FIM
+	#lw s6,0(s3)		# le o valor da nota
+	#lw s7,4(s3)		# le a duracao da nota
+	#li a7,31		# define a chamada de syscall
+	#ecall			# toca a nota
+	#mv a0,a1		# passa a duraÔøΩÔøΩo da nota para a pausa
+	#li a7,32		# define a chamada de syscal 
+	#ecall			# realiza uma pausa de a0 ms
+	#addi s3,s3,8		# incrementa para o endereÔøΩo da prÔøΩxima nota
+	#addi a4,a4,1		# incrementa o contador de notas
+#	j MUSICA		# volta ao loop
+	
 		
 		
 SETUP:		la a0, mapa
@@ -80,25 +104,69 @@ SETUP:		la a0, mapa
 		sw t0, 0(t1)
 		
 GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estÔøΩ sendo pressionada
-		xori s0,s0,1 #alternador de frames
+		xori s3,s3,1 #alternador de frames
+		
+						
+		li t0,0xFF200604 # alterador de frames
+		sw s3,0(t0)	
+
 		
 		la t0,POSICAO_SORVETE #carrega a posicao atual do sorvete em t0
 		la t1, SENTIDO
 		lw a0, 0(t1) #carrega a sprite do sorvete de acordo com o sentido
 		lh a1,0(t0) #carrega a posicao x do sorvete para a1, que √© o registrador requisitado pelo procedimento "print"
 		lh a2,2(t0) # carrega a posicao y do sorvete para a2, que √© o registrador requisitado pelo procedimento "print"
-		mv a3,s0 #define o frame utilizado
+		mv a3,s3 #define o frame utilizado
 		call PRINT
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
 		la t0,ANTIGA_POS_SORVETE
 		la a0, bloco_de_neve # gera√ß√£o do personagem
 		lh a1,0(t0)
 		lh a2,2(t0)
-		mv a3,s0
+		mv a3,s3
 		xori a3, a3, 1
 		call PRINT
+		
+		####reprodu√ß√£o da m√∫sica
+		
+		la t6,A2_intermediario #carrega o endereco A2_intermediario em t6
+		sw a2,0(t6) #salva o conteudo de a2 em t6
+		
+		li a2,68		# define o instrumento
+		
+		la t6,A3_intermediario #carrega o endereco A3_intermediario em t6
+		sw a3,0(t6) 		#salva o conteudo de a3 em t6
+		
+		li a3,50		# define o volume
+		
+		la t6,A0_intermediario #carrega o endereco A0_intermediario em t6
+		sw a0,0(t6) #salva o conteudo de a0 em t6
+		la t6,A1_intermediario #carrega o endereco A1_intermediario em t6
+		sw a1,0(t6) #carrega o conteudo de a1 em t6
+		
+		
+		lw a0,0(s0)		# le o valor da nota
+		lw a1,4(s0)		# le a duracao da nota
+		li a7,31		# define a chamada de syscall
+		ecall			# toca a nota
+		
+		addi s0,s0,8		# incrementa para o endereÔøΩo da prÔøΩxima nota
+		addi a4,a4,1		# incrementa o contador de notas
+		
+		la t6,A0_intermediario #carrega o enredeco de A0_intermediario em t6
+		lw a0,0(t6) #carrega em a0 o conteudo de t6
+		la t6,A1_intermediario # carrega o endereco de A1_intermediario em t6
+		lw a1,0(t6) #carrega em a0 o conteudo de t6
+		la t6,A2_intermediario # carrega o endereco de A1_intermediario em t6
+		lw a2,0(t6) #carrega em a0 o conteudo de t6
+		la t6,A3_intermediario # carrega o endereco de A1_intermediario em t6
+		lw a3,0(t6) #carrega em a0 o conteudo de t6
+		
+		beq a4,s4,SETUP_MUSICA
+		
+		
 		
 		j GAME_LOOP
 		
@@ -117,7 +185,7 @@ TECLA_PRESS:	li t1,0xFF200000	# carrega o endereÔøΩo de controle do KDMMIO
 		li t0,'d'
 		beq t2,t0,ANDA_DIR #se a tecla pressionada for d, anda para a direita
 		li t0, ' '
-		beq t2, t0, GELO_ANIMACAO # se for espaÁo, mostra o bonequinho cuspindo
+		beq t2, t0, GELO_ANIMACAO # se for espaÔøΩo, mostra o bonequinho cuspindo
 		
 RETURN:		ret
 
@@ -133,17 +201,17 @@ ANDA_CIMA:	# mudanÔøΩa da direÔøΩÔøΩo p onde o personagem ta olhando
 		
 		#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
-		lh t1, 0(t0) # t1 = posiÁ„o x
-		lh t2, 2(t0) # t2 = posiÁ„o y
+		lh t1, 0(t0) # t1 = posiÔøΩÔøΩo x
+		lh t2, 2(t0) # t2 = posiÔøΩÔøΩo y
 		addi t2, t2, -16 # pula pro bloco de CIMA
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, t1
 		li t4,320
 		mul t4, t4, t2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3)
 		li t6, 0xe3e3e3e3
 		beq t5, t6, GAME_LOOP
@@ -176,17 +244,17 @@ ANDA_BAIXO:	# mudanÔøΩa da direÔøΩÔøΩo p onde o personagem ta olhando
 		
 		#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
-		lh t1, 0(t0) # t1 = posiÁ„o x
-		lh t2, 2(t0) # t2 = posiÁ„o y
+		lh t1, 0(t0) # t1 = posiÔøΩÔøΩo x
+		lh t2, 2(t0) # t2 = posiÔøΩÔøΩo y
 		addi t2, t2, 16 # pula pro bloco de baixo
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, t1
 		li t4,320
 		mul t4, t4, t2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3)
 		li t6, 0xe3e3e3e3
 		beq t5, t6, GAME_LOOP
@@ -219,17 +287,17 @@ ANDA_DIR:	# mudanÔøΩa da direÔøΩÔøΩo p onde o personagem ta olhando
 		
 		#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
-		lh t1, 0(t0) # t1 = posiÁ„o x
-		lh t2, 2(t0) # t2 = posiÁ„o y
+		lh t1, 0(t0) # t1 = posiÔøΩÔøΩo x
+		lh t2, 2(t0) # t2 = posiÔøΩÔøΩo y
 		addi t1, t1, 16 # pula pro bloco de CIMA
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, t1
 		li t4,320
 		mul t4, t4, t2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3)
 		li t6, 0xe3e3e3e3
 		beq t5, t6, GAME_LOOP
@@ -262,17 +330,17 @@ ANDA_ESQ:	# mudanÔøΩa da direÔøΩÔøΩo p onde o personagem ta olhando
 		
 		#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
-		lh t1, 0(t0) # t1 = posiÁ„o x
-		lh t2, 2(t0) # t2 = posiÁ„o y
+		lh t1, 0(t0) # t1 = posiÔøΩÔøΩo x
+		lh t2, 2(t0) # t2 = posiÔøΩÔøΩo y
 		addi t1, t1, -16 # pula pro bloco de CIMA
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, t1
 		li t4,320
 		mul t4, t4, t2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3)
 		li t6, 0xe3e3e3e3
 		beq t5, t6, GAME_LOOP
@@ -437,13 +505,13 @@ GELO_P_DIR:	la t0, ARRAY # carregamento dos frames do personagem no array usado 
 		li a5, 5
 		call ANIMACAO
 		
-ANIMACAO:	# animaÁ„o do bonequinho cuspindo o gelo
-		xori s0,s0,1 #alternador de frames
+ANIMACAO:	# animaÔøΩÔøΩo do bonequinho cuspindo o gelo
+		xori s3,s3,1 #alternador de frames
 		lw  a0, 0(a4)
 		la t0, POSICAO_SORVETE
 		lh a1, 0(t0)
 		lh a2, 2(t0)
-		mv a3, s0
+		mv a3, s3
 		call PRINT
 		
 		li a7, 32
@@ -451,7 +519,7 @@ ANIMACAO:	# animaÁ„o do bonequinho cuspindo o gelo
 		ecall
 		
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
 		addi a4, a4, 4
 		addi a5, a5, -1
@@ -473,37 +541,37 @@ ANIMACAO:	# animaÁ„o do bonequinho cuspindo o gelo
 		
 SPAWN_DOWN:	#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
-		lh t1, 0(t0) # t1 = posiÁ„o x
-		lh t2, 2(t0) # t2 = posiÁ„o y
+		lh t1, 0(t0) # t1 = posiÔøΩÔøΩo x
+		lh t2, 2(t0) # t2 = posiÔøΩÔøΩo y
 		addi t2, t2, 16 # pula pro bloco debaixo
 		
-		#carregar o conte˙do que tem na tela em t3
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
+		#carregar o conteÔøΩdo que tem na tela em t3
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, t1
 		li t4,320
 		mul t4, t4, t2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3)
 		
-		#verificando se È gelo
+		#verificando se ÔøΩ gelo
 		li t4, 0xe3e3e3e3
 		beq t4, t5, LOAD_NEVE_D
 		
-		#verificando se È neve
+		#verificando se ÔøΩ neve
 		li t4, -1
 		beq t4, t5, LOAD_GELO_D
 		
-LOAD_GELO_D: 	xori s0, s0, 1
+LOAD_GELO_D: 	xori s3, s3, 1
 		la a0, bloco_de_gelo
 		la t0, POSICAO_SORVETE
 		lh a1, 0(t0)
 		lh a2, 2(t0)
 		addi a2, a2, 16 # pula pro bloco debaixo
-		li a4, 0xe3e3e3e3 # a4 ser· usado para verificar se ainda tem gelo no caminho. caso contrario, o loop se encerra,
-				# para que ele n„o quebre todos os gelos da fila/ coluna
+		li a4, 0xe3e3e3e3 # a4 serÔøΩ usado para verificar se ainda tem gelo no caminho. caso contrario, o loop se encerra,
+				# para que ele nÔøΩo quebre todos os gelos da fila/ coluna
 		j LOOP_GELO_DOWN
 		
 LOAD_NEVE_D:	la a0, bloco_de_neve
@@ -512,75 +580,75 @@ LOAD_NEVE_D:	la a0, bloco_de_neve
 		lh a2, 2(t0)
 		addi a2, a2, 16 # pula pro bloco debaixo
 		li a4, -1
-		mv a3, s0 # a3 = frame que o gelo sera desenhado	
+		mv a3, s3 # a3 = frame que o gelo sera desenhado	
 		
-LOOP_GELO_DOWN: li t6, 960 # t6 = posiÁ„o y do final do mapa
+LOOP_GELO_DOWN: li t6, 960 # t6 = posiÔøΩÔøΩo y do final do mapa
 		beq a2, t6, GAME_LOOP # verifica se chegou no final do mapa
 		
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
-		# t1 = posiÁ„o x
-		# t2 = posiÁ„o y
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
+		# t1 = posiÔøΩÔøΩo x
+		# t2 = posiÔøΩÔøΩo y
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, a1
 		li t4,320
 		mul t4, t4, a2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3) # t5 = primeira word de pixels do bloco
 		beq t5, a4, GAME_LOOP
 		
-		xori s0, s0, 1 # muda pro frame que n„o est· sendo desenhado
-		mv a3, s0 # a3 = frame que o gelo sera desenhado
+		xori s3, s3, 1 # muda pro frame que nÔøΩo estÔøΩ sendo desenhado
+		mv a3, s3 # a3 = frame que o gelo sera desenhado
 		# desenha um bloco no frame 0
 		call PRINT
 		
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
-		xori s0,s0,1
-		mv a3, s0 # a3 = frame que o gelo sera desenhado
+		xori s3,s3,1
+		mv a3, s3 # a3 = frame que o gelo sera desenhado
 		call PRINT # desenho no frame 1
 		
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
 		addi a2, a2, 16
 		j LOOP_GELO_DOWN
 
 SPAWN_UP:	#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
-		lh t1, 0(t0) # t1 = posiÁ„o x
-		lh t2, 2(t0) # t2 = posiÁ„o y
+		lh t1, 0(t0) # t1 = posiÔøΩÔøΩo x
+		lh t2, 2(t0) # t2 = posiÔøΩÔøΩo y
 		addi t2, t2, -16 # pula pro bloco de CIMA
 		
-		#carregar o conte˙do que tem na tela em t3
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
+		#carregar o conteÔøΩdo que tem na tela em t3
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, t1
 		li t4,320
 		mul t4, t4, t2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3)
 		
-		#verificando se È gelo
+		#verificando se ÔøΩ gelo
 		li t4, 0xe3e3e3e3
 		beq t4, t5, LOAD_NEVE_U
 		
-		#verificando se È neve
+		#verificando se ÔøΩ neve
 		li t4, -1
 		beq t4, t5, LOAD_GELO_U
 		
-LOAD_GELO_U: 	xori s0, s0, 1
+LOAD_GELO_U: 	xori s3, s3, 1
 		la a0, bloco_de_gelo
 		la t0, POSICAO_SORVETE
 		lh a1, 0(t0)
 		lh a2, 2(t0)
 		addi a2, a2, -16 # pula pro bloco decima
-		li a4, 0xe3e3e3e3 # a4 ser· usado para verificar se ainda tem gelo no caminho. caso contrario, o loop se encerra,
-				# para que ele n„o quebre todos os gelos da fila/ coluna
+		li a4, 0xe3e3e3e3 # a4 serÔøΩ usado para verificar se ainda tem gelo no caminho. caso contrario, o loop se encerra,
+				# para que ele nÔøΩo quebre todos os gelos da fila/ coluna
 		j LOOP_GELO_UP
 		
 LOAD_NEVE_U:	la a0, bloco_de_neve
@@ -589,75 +657,75 @@ LOAD_NEVE_U:	la a0, bloco_de_neve
 		lh a2, 2(t0)
 		addi a2, a2, -16 # pula pro bloco decima
 		li a4, -1
-		mv a3, s0 # a3 = frame que o gelo sera desenhado	
+		mv a3, s3 # a3 = frame que o gelo sera desenhado	
 		
-LOOP_GELO_UP: 	li t6, -16 # t6 = posiÁ„o y do final do mapa
+LOOP_GELO_UP: 	li t6, -16 # t6 = posiÔøΩÔøΩo y do final do mapa
 		beq a2, t6, GAME_LOOP # verifica se chegou no final do mapa
 		
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
-		# t1 = posiÁ„o x
-		# t2 = posiÁ„o y
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
+		# t1 = posiÔøΩÔøΩo x
+		# t2 = posiÔøΩÔøΩo y
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, a1
 		li t4,320
 		mul t4, t4, a2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3) # t5 = primeira word de pixels do bloco
 		beq t5, a4, GAME_LOOP
 		
-		xori s0, s0, 1 # muda pro frame que n„o est· sendo desenhado
-		mv a3, s0 # a3 = frame que o gelo sera desenhado
+		xori s3, s3, 1 # muda pro frame que nÔøΩo estÔøΩ sendo desenhado
+		mv a3, s3 # a3 = frame que o gelo sera desenhado
 		# desenha um bloco no frame 0
 		call PRINT
 		
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
-		xori s0,s0,1
-		mv a3, s0 # a3 = frame que o gelo sera desenhado
+		xori s3,s3,1
+		mv a3, s3 # a3 = frame que o gelo sera desenhado
 		call PRINT # desenho no frame 1
 		
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
 		addi a2, a2, -16
 		j LOOP_GELO_UP
 
 SPAWN_RIGHT:	#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
-		lh t1, 0(t0) # t1 = posiÁ„o x
-		lh t2, 2(t0) # t2 = posiÁ„o y
+		lh t1, 0(t0) # t1 = posiÔøΩÔøΩo x
+		lh t2, 2(t0) # t2 = posiÔøΩÔøΩo y
 		addi t1, t1, 16 # pula pro bloco de CIMA
 		
-		#carregar o conte˙do que tem na tela em t3
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
+		#carregar o conteÔøΩdo que tem na tela em t3
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, t1
 		li t4,320
 		mul t4, t4, t2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3)
 		
-		#verificando se È gelo
+		#verificando se ÔøΩ gelo
 		li t4, 0xe3e3e3e3
 		beq t4, t5, LOAD_NEVE_R
 		
-		#verificando se È neve
+		#verificando se ÔøΩ neve
 		li t4, -1
 		beq t4, t5, LOAD_GELO_R
 		
-LOAD_GELO_R: 	xori s0, s0, 1
+LOAD_GELO_R: 	xori s3, s3, 1
 		la a0, bloco_de_gelo
 		la t0, POSICAO_SORVETE
 		lh a1, 0(t0)
 		lh a2, 2(t0)
 		addi a1, a1, 16 # pula pro bloco da direita
-		li a4, 0xe3e3e3e3 # a4 ser· usado para verificar se ainda tem gelo no caminho. caso contrario, o loop se encerra,
-		# para que ele n„o quebre todos os gelos da fila/ coluna
+		li a4, 0xe3e3e3e3 # a4 serÔøΩ usado para verificar se ainda tem gelo no caminho. caso contrario, o loop se encerra,
+		# para que ele nÔøΩo quebre todos os gelos da fila/ coluna
 		j LOOP_GELO_R
 		
 LOAD_NEVE_R:	la a0, bloco_de_neve
@@ -665,77 +733,77 @@ LOAD_NEVE_R:	la a0, bloco_de_neve
 		lh a1, 0(t0)
 		lh a2, 2(t0)
 		addi a1, a1, 16 # pula pro bloco da direita
-		mv a3, s0 # a3 = frame que o gelo sera desenhado
+		mv a3, s3 # a3 = frame que o gelo sera desenhado
 		li a4, -1
 			
 		
-LOOP_GELO_R: 	li t6, 288 # t6 = posiÁ„o y do final do mapa
+LOOP_GELO_R: 	li t6, 288 # t6 = posiÔøΩÔøΩo y do final do mapa
 		beq a1, t6, GAME_LOOP # verifica se chegou no final do mapa
 		
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
-		# t1 = posiÁ„o x
-		# t2 = posiÁ„o y
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
+		# t1 = posiÔøΩÔøΩo x
+		# t2 = posiÔøΩÔøΩo y
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, a1
 		li t4,320
 		mul t4, t4, a2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3) # t5 = primeira word de pixels do bloco
 		beq t5, a4, GAME_LOOP
 		
-		xori s0, s0, 1 # muda pro frame que n„o est· sendo desenhado
-		mv a3, s0 # a3 = frame que o gelo sera desenhado
+		xori s3, s3, 1 # muda pro frame que nÔøΩo estÔøΩ sendo desenhado
+		mv a3, s3 # a3 = frame que o gelo sera desenhado
 		# desenha um bloco no frame 0
 		call PRINT
 		
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
-		xori s0,s0,1
-		mv a3, s0 # a3 = frame que o gelo sera desenhado
+		xori s3,s3,1
+		mv a3, s3 # a3 = frame que o gelo sera desenhado
 		call PRINT # desenho no frame 1
 		
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
 		addi a1, a1, 16
 		j LOOP_GELO_R
 
 SPAWN_LEFT:	#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
-		lh t1, 0(t0) # t1 = posiÁ„o x
-		lh t2, 2(t0) # t2 = posiÁ„o y
+		lh t1, 0(t0) # t1 = posiÔøΩÔøΩo x
+		lh t2, 2(t0) # t2 = posiÔøΩÔøΩo y
 		addi t1, t1, -16 # pula pro bloco de CIMA
 		
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
-		#carregar o conte˙do que tem na tela em t3
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
+		#carregar o conteÔøΩdo que tem na tela em t3
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, t1
 		li t4,320
 		mul t4, t4, t2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3)
 		
-		#verificando se È gelo
+		#verificando se ÔøΩ gelo
 		li t4, 0xe3e3e3e3
 		beq t4, t5, LOAD_NEVE_L
 		
-		#verificando se È neve
+		#verificando se ÔøΩ neve
 		li t4, -1
 		beq t4, t5, LOAD_GELO_L
 		
-LOAD_GELO_L: 	xori s0, s0, 1
+LOAD_GELO_L: 	xori s3, s3, 1
 		la a0, bloco_de_gelo
 		la t0, POSICAO_SORVETE
 		lh a1, 0(t0)
 		lh a2, 2(t0)
 		addi a1, a1, -16 # pula pro bloco da esquerda
-		li a4, 0xe3e3e3e3 # a4 ser· usado para verificar se ainda tem gelo no caminho. caso contrario, o loop se encerra,
-		# para que ele n„o quebre todos os gelos da fila/ coluna
+		li a4, 0xe3e3e3e3 # a4 serÔøΩ usado para verificar se ainda tem gelo no caminho. caso contrario, o loop se encerra,
+		# para que ele nÔøΩo quebre todos os gelos da fila/ coluna
 		j LOOP_GELO_L
 		
 LOAD_NEVE_L:	la a0, bloco_de_neve
@@ -743,38 +811,38 @@ LOAD_NEVE_L:	la a0, bloco_de_neve
 		lh a1, 0(t0)
 		lh a2, 2(t0)
 		addi a1, a1, -16 # pula pro bloco da esquerda
-		mv a3, s0 # a3 = frame que o gelo sera desenhado	
+		mv a3, s3 # a3 = frame que o gelo sera desenhado	
 		li a4, -1
 		
-LOOP_GELO_L: 	li t6, 16 # t6 = posiÁ„o y do final do mapa
+LOOP_GELO_L: 	li t6, 16 # t6 = posiÔøΩÔøΩo y do final do mapa
 		beq a1, t6, GAME_LOOP # verifica se chegou no final do mapa
-		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se È gelo ou neve
-		# t1 = posiÁ„o x
-		# t2 = posiÁ„o y
+		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ÔøΩ gelo ou neve
+		# t1 = posiÔøΩÔøΩo x
+		# t2 = posiÔøΩÔøΩo y
 		li t3, 0xFF0
 		add t3, t3, a3
 		slli t3, t3, 20
 		add t3, t3, a1
 		li t4,320
 		mul t4, t4, a2
-		add t3, t3, t4 # t3 tem o valor do endereÁo do prÛximo quadradinho
+		add t3, t3, t4 # t3 tem o valor do endereÔøΩo do prÔøΩximo quadradinho
 		lw t5, 0(t3) # t5 = primeira word de pixels do bloco
 		beq t5, a4, GAME_LOOP
 		
-		xori s0, s0, 1 # muda pro frame que n„o est· sendo desenhado
-		mv a3, s0 # a3 = frame que o gelo sera desenhado
+		xori s3, s3, 1 # muda pro frame que nÔøΩo estÔøΩ sendo desenhado
+		mv a3, s3 # a3 = frame que o gelo sera desenhado
 		# desenha um bloco no frame 0
 		call PRINT
 		
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
-		xori s0,s0,1
-		mv a3, s0 # a3 = frame que o gelo sera desenhado
+		xori s3,s3,1
+		mv a3, s3 # a3 = frame que o gelo sera desenhado
 		call PRINT # desenho no frame 1
 		
 		li t0,0xFF200604 # alterador de frames
-		sw s0,0(t0)
+		sw s3,0(t0)
 		
 		addi a1, a1, -16
 		j LOOP_GELO_L

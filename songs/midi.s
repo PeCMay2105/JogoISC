@@ -18,7 +18,7 @@ NOTAS: 69,500,76,500,74,500,76,500,79,600, 76,1000,0,1200,69,500,76,500,74,500,7
 	li a2,68		# define o instrumento
 	li a3,127		# define o volume
 
-MUSICA:	beq t0,s1, FIM		# contador chegou no final? ent�o  v� para FIM
+MUSICA:			# contador chegou no final? ent�o  v� para FIM
 	lw a0,0(s0)		# le o valor da nota
 	lw a1,4(s0)		# le a duracao da nota
 	li a7,31		# define a chamada de syscall
@@ -28,7 +28,7 @@ MUSICA:	beq t0,s1, FIM		# contador chegou no final? ent�o  v� para FIM
 	ecall			# realiza uma pausa de a0 ms
 	addi s0,s0,8		# incrementa para o endere�o da pr�xima nota
 	addi t0,t0,1		# incrementa o contador de notas
-	j LOOP			# volta ao loop
+	j MUSICA			# volta ao loop
 	
 FIM_MUSICA:	li a0,40		# define a nota
 		li a1,1500		# define a dura��o da nota em ms
