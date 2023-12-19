@@ -1,3 +1,5 @@
+#	C”DIGO BASE PARA CRIA«√O DAS FASES
+
 .data 
 POSICAO_SORVETE: .half 144, 160
 A1_intermediario: .word 0
@@ -5,48 +7,90 @@ A0_intermediario: .word 0
 A2_intermediario: .word 0
 A3_intermediario: .word 0
 
-
-DIRECAO_SORVETE: frente1
+DIRECAO_SORVETE: .word 0
 ARRAY: .word 0, 0, 0, 0, 0, 0 # array pra fazer a animacao do boneco
-SENTIDO: .word 0
+SENTIDO: .word 0# direÁ„o na qual o sorvete est· olhando (direita,)
+
+# contadores que restringem a movimentaÁ„o do sorvete atÈ certas ·reas do mapa
 CONTADOR_HORIZONTAL: .byte 10
 CONTADOR_VERTICAL: .byte 4
+
+
 NUM: .word 111
 NOTAS: 52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,59,258,60,258,57,2068,47,258,52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,55,258,62,258,60,2584,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,258
 NOTA_ATUAL:
+
+# armazenamento da antiga posiÁ„o do sorvete para eliminar rastros
 ANTIGA_POS_SORVETE: .half 144,160
+
+# utilizado para geraÁ„o de gelo
 BLOCOS_P_FIM: .word 0
-.include "mapa.data"
-.include "frente1.data"
-.include "direita1.data"
-.include "costas1.data"
-.include "esquerda1.data"
-.include "bloco_de_neve.data"
-.include "bloco_de_gelo.data"
-.include "gf1.data"
-.include "gf2.data"
-.include "gf3.data"
-.include "gf4.data"
-.include "gf5.data"
-.include "gc1.data"
-.include "gc2.data"
-.include "gc3.data"
-.include "gc4.data"
-.include "gc5.data"
-.include "gd1.data"
-.include "gd2.data"
-.include "gd3.data"
-.include "gd4.data"
-.include "gd5.data"
-.include "ge1.data"
-.include "ge2.data"
-.include "ge3.data"
-.include "ge4.data"
-.include "ge5.data"
+
+# mapa e blocos
+.include "sprites/mapa.data"
+.include "sprites/bloco_de_neve.data"
+.include "sprites/bloco_de_gelo.data"
+
+# jogador
+.include "sprites/frente1.data"
+.include "sprites/direita1.data"
+.include "sprites/costas1.data"
+.include "sprites/esquerda1.data"
+.include "sprites/gf1.data"
+.include "sprites/gf2.data"
+.include "sprites/gf3.data"
+.include "sprites/gf4.data"
+.include "sprites/gf5.data"
+.include "sprites/gc1.data"
+.include "sprites/gc2.data"
+.include "sprites/gc3.data"
+.include "sprites/gc4.data"
+.include "sprites/gc5.data"
+.include "sprites/gd1.data"
+.include "sprites/gd2.data"
+.include "sprites/gd3.data"
+.include "sprites/gd4.data"
+.include "sprites/gd5.data"
+.include "sprites/ge1.data"
+.include "sprites/ge2.data"
+.include "sprites/ge3.data"
+.include "sprites/ge4.data"
+.include "sprites/ge5.data"
+
+#inimigos
+.include "sprites/costas_inimigo1.data"
+.include "sprites/costas_inimigo2.data"
+.include "sprites/direita_inimigo1.data"
+.include "sprites/direita_inimigo2.data"
+.include "sprites/esquerda_inimigo1.data"
+.include "sprites/frente_inimigo1.data"
+.include "sprites/frente_inimigo2.data"
+
+# frutas
+.include "sprites/uva1.data"
+.include "sprites/uva2.data"
+.include "sprites/melancia1.data"
+.include "sprites/melancia2.data"
+
+# definiÁ„o da quantidade de frutas e das localizaÁıes de cada uma
+# obs: posiÁ„o 0(coordenada x), 0(coordenada y)
+# utilizaremos a posiÁ„o 0,0 para mostrar que a fruta ja foi coletada
+QTD_UVA: .byte 0
+POSICOES_UVAS: .word 0,0
+
+QTD_MELANCIA: .byte 0
+POSICOES_MELANCIA: .word 0,0
+
+# definiÁ„o da quantidade de inimigoa e das localizaÁıes de cada um
+# obs: posiÁ„o 0(coordenada x), 0(coordenada y)
+QTD_INIMIGOS1: .byte 0
+POSICOES_INIMIGOS1: .word 0,0
+
+
 
 .text
-
-##### REGISTRADORES DISPON√çVEIS PARA PROCEDIMENTOS SIMULT√ÇNEOS AO PRINT:
+j SETUP
+##### REGISTRADORES DISPON√?VEIS PARA PROCEDIMENTOS SIMULT√ÇNEOS AO PRINT:
 # 		t6 (√© usado na movimenta√ß√£o do personagem)
 #		a4
 #		a5
@@ -109,17 +153,6 @@ GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estÔøΩ
 						
 		li t0,0xFF200604 # alterador de frames
 		sw s3,0(t0)	
-
-		
-		la t0,POSICAO_SORVETE #carrega a posicao atual do sorvete em t0
-		la t1, SENTIDO
-		lw a0, 0(t1) #carrega a sprite do sorvete de acordo com o sentido
-		lh a1,0(t0) #carrega a posicao x do sorvete para a1, que √© o registrador requisitado pelo procedimento "print"
-		lh a2,2(t0) # carrega a posicao y do sorvete para a2, que √© o registrador requisitado pelo procedimento "print"
-		mv a3,s3 #define o frame utilizado
-		call PRINT
-		li t0,0xFF200604 # alterador de frames
-		sw s3,0(t0)
 		
 		la t0,ANTIGA_POS_SORVETE
 		la a0, bloco_de_neve # gera√ß√£o do personagem
@@ -129,6 +162,16 @@ GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estÔøΩ
 		xori a3, a3, 1
 		call PRINT
 		
+		la t0,POSICAO_SORVETE #carrega a posicao atual do sorvete em t0
+		la t1, SENTIDO
+		lw a0, 0(t1) #carrega a sprite do sorvete de acordo com o sentido
+		lh a1,0(t0) #carrega a posicao x do sorvete para a1, que √© o registrador requisitado pelo procedimento "print"
+		lh a2,2(t0) # carrega a posicao y do sorvete para a2, que √© o registrador requisitado pelo procedimento "print"
+		mv a3,s3 #define o frame utilizado
+		xori a3, a3, 1
+		call PRINT
+		
+		j GAME_LOOP
 		####reprodu√ß√£o da m√∫sica
 		
 		la t6,A2_intermediario #carrega o endereco A2_intermediario em t6
