@@ -1,4 +1,4 @@
-#	CÓDIGO BASE PARA CRIAÇÃO DAS FASES
+#	Cï¿½DIGO BASE PARA CRIAï¿½ï¿½O DAS FASES
 
 .data 
 POSICAO_SORVETE: .half 144, 160
@@ -9,9 +9,9 @@ POSICAO_SORVETE: .half 144, 160
 
 DIRECAO_SORVETE: .word 0
 ARRAY: .word 0, 0, 0, 0, 0, 0 # array pra fazer a animacao do boneco
-SENTIDO: .word 0# direção na qual o sorvete está olhando (direita,)
+SENTIDO: .word 0# direï¿½ï¿½o na qual o sorvete estï¿½ olhando (direita,)
 
-# contadores que restringem a movimentação do sorvete até certas áreas do mapa
+# contadores que restringem a movimentaï¿½ï¿½o do sorvete atï¿½ certas ï¿½reas do mapa
 CONTADOR_HORIZONTAL: .byte 10
 CONTADOR_VERTICAL: .byte 4
 
@@ -20,14 +20,15 @@ CONTADOR_VERTICAL: .byte 4
 #NOTAS: 52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,59,258,60,258,57,2068,47,258,52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,55,258,62,258,60,2584,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,258
 #NOTA_ATUAL:
 
-# armazenamento da antiga posição do sorvete para eliminar rastros
+# armazenamento da antiga posiï¿½ï¿½o do sorvete para eliminar rastros
 ANTIGA_POS_SORVETE: .half 144,160
 
-# utilizado para geração de gelo
+# utilizado para geraï¿½ï¿½o de gelo
 BLOCOS_P_FIM: .word 0
 
 # mapa e blocos
 .include "sprites/mapa.data"
+.include "sprites/MenuTop.data"
 .include "sprites/bloco_de_neve.data"
 .include "sprites/bloco_de_gelo.data"
 
@@ -72,9 +73,9 @@ BLOCOS_P_FIM: .word 0
 .include "sprites/melancia1.data"
 .include "sprites/melancia2.data"
 
-# definição da quantidade de frutas e das localizações de cada uma
-# obs: posição 0(coordenada x), 0(coordenada y)
-# utilizaremos a posição 0,0 para mostrar que a fruta ja foi coletada
+# definiï¿½ï¿½o da quantidade de frutas e das localizaï¿½ï¿½es de cada uma
+# obs: posiï¿½ï¿½o 0(coordenada x), 0(coordenada y)
+# utilizaremos a posiï¿½ï¿½o 0,0 para mostrar que a fruta ja foi coletada
 UVAS_COMIDAS: .byte 0 # variavel utilizada para verificar quantas uvas i jogador comeu
 QTD_UVA: .byte 4
 POSICOES_UVAS: .half 32,16, 32,160, 128,16, 128, 160
@@ -83,16 +84,16 @@ MELANCIAS_COMIDAS: .byte 0 # contador de qtas melancias o jogador comeu
 QTD_MELANCIA: .byte 4
 POSICOES_MELANCIA: .half 48,48, 48, 96, 112, 16, 32, 32
 
-# definição da quantidade de inimigoa e das localizações de cada um
-# obs: posição 0(coordenada x), 0(coordenada y)
+# definiï¿½ï¿½o da quantidade de inimigoa e das localizaï¿½ï¿½es de cada um
+# obs: posiï¿½ï¿½o 0(coordenada x), 0(coordenada y)
 QTD_INIMIGOS1: .byte 0
 POSICOES_INIMIGOS1: .half 0,0
 
 
 
 .text
-j SETUP
-##### REGISTRADORES DISPONÃ?VEIS PARA PROCEDIMENTOS SIMULTÃ‚NEOS AO PRINT:
+j MENU
+##### REGISTRADORES DISPONIVEIS PARA PROCEDIMENTOS SIMULTÃ‚NEOS AO PRINT:
 # 		t6 (Ã© usado na movimentaÃ§Ã£o do personagem)
 #		a4
 #		a5
@@ -136,6 +137,31 @@ SETUP_MUSICA:
 	
 		
 		
+		
+MENU:
+	la a0, MenuTop
+	li a1, 0
+	li a2, 0
+	li a3, 0
+	call PRINT
+	li a3, 1
+	call PRINT
+Menu_loop:
+		li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
+		lw t0,0(t1)			# Le bit de Controle Teclado
+		andi t0,t0,0x0001		# mascara o bit menos significativo
+	   	beq t0,zero,RETURN   	   	# Se nï¿½o hï¿½ tecla pressionada entï¿½o vai para FIM
+	  	lw t2,4(t1)  			# le o valor da tecla tecla
+		
+		li t0,'1'
+		beq t2,t0,SETUP
+		li t0,'2'
+		beq t2,t0,SAIR
+		j Menu_loop
+SAIR:
+		li a7, 10
+		ecall
+		
 SETUP:		la a0, mapa
 		li a1, 0
 		li a2, 0
@@ -165,7 +191,7 @@ GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estï¿½
 		lh t1, 0(t0)
 		lh t2, 2(t0)
 		la t0, POSICOES_MELANCIA
-		call COMEU_M # só verifica se comeu melancia quando não tiverem uvas, para não comer as melancias sem elas aparecerem
+		call COMEU_M # sï¿½ verifica se comeu melancia quando nï¿½o tiverem uvas, para nï¿½o comer as melancias sem elas aparecerem
 		
 ELSE:		xori s3,s3,1 #alternador de frames			
 		li t0,0xFF200604 # alterador de frames
@@ -190,18 +216,18 @@ ELSE:		xori s3,s3,1 #alternador de frames
 		
 		la t0, QTD_UVA
 		lbu a4, 0(t0) # armazena a quantidade de frutas em a4
-		la a0, uva1 # carrega o endereço da imagem da uva
-		la a5, POSICOES_UVAS # carrega o endereço da posição da uva no endereço
+		la a0, uva1 # carrega o endereï¿½o da imagem da uva
+		la a5, POSICOES_UVAS # carrega o endereï¿½o da posiï¿½ï¿½o da uva no endereï¿½o
 		
 SPAWN_UVAS:	lh a1, 0(a5) 
-		lh a2, 2(a5) # carrega a posição da uva pros registradores do print
-		beqz a1, NOT_SPAWN # se a1 = 0, siginifica q a fruta foi coletada, então não será desenhada
+		lh a2, 2(a5) # carrega a posiï¿½ï¿½o da uva pros registradores do print
+		beqz a1, NOT_SPAWN # se a1 = 0, siginifica q a fruta foi coletada, entï¿½o nï¿½o serï¿½ desenhada
 		mv a3,s3
-		beqz a3, NOT_SPAWN # desenharemos a fruta em só um frame para fazê-la piscar
-		xori a3, a3, 1 # definição do frame
+		beqz a3, NOT_SPAWN # desenharemos a fruta em sï¿½ um frame para fazï¿½-la piscar
+		xori a3, a3, 1 # definiï¿½ï¿½o do frame
 		call PRINT # desenho da fruta no bitmap
 NOT_SPAWN:	addi a4, a4, -1 #subtrai o contador
-		addi a5, a5, 4 # pula as posições
+		addi a5, a5, 4 # pula as posiï¿½ï¿½es
 		
 		bnez a4, SPAWN_UVAS
 		
@@ -209,27 +235,27 @@ NOT_SPAWN:	addi a4, a4, -1 #subtrai o contador
 		lb t1, 0(t0) # carrega a qtde de uvas
 		la t0, UVAS_COMIDAS
 		lb t2, 0(t0)
-		beq t1, t2, SETUP_MELANCIA # SE ainda tiver uma, pula pro gameloop, se não, as melancias serão renderizadas
+		beq t1, t2, SETUP_MELANCIA # SE ainda tiver uma, pula pro gameloop, se nï¿½o, as melancias serï¿½o renderizadas
 		j GAME_LOOP
 		
 SETUP_MELANCIA:	la t0, QTD_MELANCIA
 		lbu a4, 0(t0) # armazena a quantidade de frutas em a4
-		la a0, melancia1 # carrega o endereço da imagem da uva
-		la a5, POSICOES_MELANCIA # carrega o endereço da posição da uva no a5
+		la a0, melancia1 # carrega o endereï¿½o da imagem da uva
+		la a5, POSICOES_MELANCIA # carrega o endereï¿½o da posiï¿½ï¿½o da uva no a5
 		
 		
 SPAWN_MELANCIA:	lh a1, 0(a5) 
-		lh a2, 2(a5) # carrega a posição da melancia pros registradores do print
-		beqz a1, NOT_SPAWN_M # se a1 = 0, siginifica q a fruta foi coletada, então não será desenhada
+		lh a2, 2(a5) # carrega a posiï¿½ï¿½o da melancia pros registradores do print
+		beqz a1, NOT_SPAWN_M # se a1 = 0, siginifica q a fruta foi coletada, entï¿½o nï¿½o serï¿½ desenhada
 		mv a3,s3
-		beqz a3, NOT_SPAWN_M # desenharemos a fruta em só um frame para fazê-la piscar
-		xori a3, a3, 1 # definição do frame
+		beqz a3, NOT_SPAWN_M # desenharemos a fruta em sï¿½ um frame para fazï¿½-la piscar
+		xori a3, a3, 1 # definiï¿½ï¿½o do frame
 		call PRINT # desenho da fruta no bitmap		
 		
 NOT_SPAWN_M:	addi a4, a4, -1 #subtrai o contador
-		addi a5, a5, 4 # pula as posições
+		addi a5, a5, 4 # pula as posiï¿½ï¿½es
 		
-		bnez a4, SPAWN_MELANCIA # se não tiver zerado, ele volta pro loop, caso contrário, segue o fluxo do código
+		bnez a4, SPAWN_MELANCIA # se nï¿½o tiver zerado, ele volta pro loop, caso contrï¿½rio, segue o fluxo do cï¿½digo
 		j GAME_LOOP
 		
 		####reproduÃ§Ã£o da mÃºsica
@@ -1015,7 +1041,7 @@ COMEU_UVA:	lh t3, 0(t0)
 		bne t1, t3, PROX_UVA # se nn for igual, pula p proxima fruta 
 		bne t2, t5, PROX_UVA
 		li s0, 0
-		sh  zero, 0(t0) # como as coordenadas são iguais, os endereços q armazenam a 
+		sh  zero, 0(t0) # como as coordenadas sï¿½o iguais, os endereï¿½os q armazenam a 
 		sh zero, 2(t0) # localizacao da fruta sao zerados e o programa retorna ao codigo
 		
 		# aumenta a qtde de uvas q ele comeu em uma unidade
@@ -1041,7 +1067,7 @@ COMEU_M:	la s0, UVAS_COMIDAS
 		bne t1, t3, PROX_M # se nn for igual, pula p proxima fruta 
 		bne t2, t5, PROX_M
 		li s0, 0
-		sh  zero, 0(t0) # como as coordenadas são iguais, os endereços q armazenam a 
+		sh  zero, 0(t0) # como as coordenadas sï¿½o iguais, os endereï¿½os q armazenam a 
 		sh zero, 2(t0) # localizacao da fruta sao zerados e o programa retorna ao codigo
 		
 		# aumenta a qtde de uvas q ele comeu em uma unidade
