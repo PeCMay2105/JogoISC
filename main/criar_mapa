@@ -110,6 +110,7 @@ CONTADOR_LOOPS: .word 0
 #.include "sprites/7.data"
 .include "sprites/8.data"
 .include "sprites/9.data"
+.include "sprites/tela_vitoria.data"
 
 .text
 j MENU
@@ -182,6 +183,38 @@ SAIR:
 		li a7, 10
 		ecall
 		
+VENCEU_JOGO:	la t0, QTD_UVA
+		lbu t1, 0(t0)
+		la t0, QTD_MELANCIA
+		lbu t2, 0(t0)
+		add t1, t1, t2 # t1 = qtde de frutas ao todo
+		la t0, UVAS_COMIDAS
+		lbu t2, 0(t0)
+		la t0, MELANCIAS_COMIDAS
+		lbu t3, 0(t0)
+		add t2,t2,t3
+		beq t1, t2, TELA_VITORIA
+		ret
+		
+TELA_VITORIA:	la a0, tela_vitoria
+		mv a1, zero
+		mv a2, zero
+		mv a3, zero
+		call PRINT
+		li a3, 1
+		call PRINT
+		
+LOOP_TELA_VITORIA:	
+		li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
+		lw t0,0(t1)			# Le bit de Controle Teclado
+		andi t0,t0,0x0001		# mascara o bit menos significativo
+	   	beq t0,zero,RETURN   	   	# Se nï¿½o hï¿½ tecla pressionada entï¿½o vai para FIM
+	  	lw t2,4(t1)  			# le o valor da tecla tecla
+		
+		li t0, 's'
+		beq t2, t0, SAIR
+		j LOOP_TELA_VITORIA
+		
 SETUP:		la a0, mapa
 		li a1, 0
 		li a2, 0
@@ -202,7 +235,7 @@ GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estï¿½
 		addi t1, t1, 1
 		sw t1, 0(t0)
 		
-		
+		call VENCEU_JOGO # verifica se o jogador venceu o jogo ou não
 		
 		la t0, QTD_UVA
 		lbu t4, 0(t0)

@@ -1,17 +1,15 @@
-#	CÓDIGO BASE PARA CRIAÇÃO DAS FASES
-
 .data 
 POSICAO_SORVETE: .half 144, 160
-A1_intermediario: .word 0
-A0_intermediario: .word 0
-A2_intermediario: .word 0
-A3_intermediario: .word 0
+#A1_intermediario: .word 0
+#A0_intermediario: .word 0
+#A2_intermediario: .word 0
+#A3_intermediario: .word 0
 
 DIRECAO_SORVETE: .word 0
 ARRAY: .word 0, 0, 0, 0, 0, 0 # array pra fazer a animacao do boneco
-SENTIDO: .word 0# direção na qual o sorvete está olhando (direita,)
+SENTIDO: .word 0# direï¿½ï¿½o na qual o sorvete estï¿½ olhando (direita,)
 
-# contadores que restringem a movimentação do sorvete até certas áreas do mapa
+# contadores que restringem a movimentaï¿½ï¿½o do sorvete atï¿½ certas ï¿½reas do mapa
 CONTADOR_HORIZONTAL: .byte 10
 CONTADOR_VERTICAL: .byte 4
 
@@ -20,14 +18,15 @@ NUM: .word 111
 NOTAS: 52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,59,258,60,258,57,2068,47,258,52,1292,50,258,52,258,55,1551,55,258,57,258,59,1551,55,258,62,258,60,2584,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,52,129,52,258,52,258,52,258,50,129,52,258,53,775,52,129,52,258,52,258,52,258,50,129,52,258,53,775,50,129,50,258,50,258,50,258,50,129,50,258,53,775,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,516,48,129,48,258,48,258,48,258,48,129,50,258,48,258,47,258
 NOTA_ATUAL:
 
-# armazenamento da antiga posição do sorvete para eliminar rastros
+# armazenamento da antiga posiï¿½ï¿½o do sorvete para eliminar rastros
 ANTIGA_POS_SORVETE: .half 144,160
 
-# utilizado para geração de gelo
+# utilizado para geraï¿½ï¿½o de gelo
 BLOCOS_P_FIM: .word 0
 
 # mapa e blocos
 .include "sprites/mapa.data"
+.include "sprites/MenuTop.data"
 .include "sprites/bloco_de_neve.data"
 .include "sprites/bloco_de_gelo.data"
 
@@ -63,6 +62,7 @@ BLOCOS_P_FIM: .word 0
 .include "sprites/direita_inimigo1.data"
 .include "sprites/direita_inimigo2.data"
 .include "sprites/esquerda_inimigo1.data"
+.include "sprites/esquerda_inimigo2.data"
 .include "sprites/frente_inimigo1.data"
 .include "sprites/frente_inimigo2.data"
 
@@ -72,25 +72,47 @@ BLOCOS_P_FIM: .word 0
 .include "sprites/melancia1.data"
 .include "sprites/melancia2.data"
 
-# definição da quantidade de frutas e das localizações de cada uma
-# obs: posição 0(coordenada x), 0(coordenada y)
-# utilizaremos a posição 0,0 para mostrar que a fruta ja foi coletada
-QTD_UVA: .byte 0
-POSICOES_UVAS: .word 0,0
+# definiï¿½ï¿½o da quantidade de frutas e das localizaï¿½ï¿½es de cada uma
+# obs: posiï¿½ï¿½o 0(coordenada x), 0(coordenada y)
+# utilizaremos a posiï¿½ï¿½o 0,0 para mostrar que a fruta ja foi coletada
+UVAS_COMIDAS: .byte 0 # variavel utilizada para verificar quantas uvas i jogador comeu
+QTD_UVA: .byte 4
+POSICOES_UVAS: .half 32,16, 32,160, 128,16, 128, 160
 
-QTD_MELANCIA: .byte 0
-POSICOES_MELANCIA: .word 0,0
+MELANCIAS_COMIDAS: .byte 0 # contador de qtas melancias o jogador comeu
+QTD_MELANCIA: .byte 4
+POSICOES_MELANCIA: .half 48,48, 48, 96, 112, 16, 32, 32
 
-# definição da quantidade de inimigoa e das localizações de cada um
-# obs: posição 0(coordenada x), 0(coordenada y)
+# definiï¿½ï¿½o da quantidade de inimigoa e das localizaï¿½ï¿½es de cada um
+# obs: posiï¿½ï¿½o 0(coordenada x), 0(coordenada y)
 QTD_INIMIGOS1: .byte 0
-POSICOES_INIMIGOS1: .word 0,0
+POSICOES_INIMIGOS1: .half 0,0, 
+MOVIMENTOS_INIMIGOS1: .byte 0, 0
+# movimento para cima e para baixo
+# 0 sobe
+# 1 desce
+# se o x ou o y forem iguais
 
 
+CONTADOR_LOOPS: .word 0
+.include "sprites/pause.data"
+
+# numeros
+.include "sprites/0.data"
+.include "sprites/1.data"
+.include "sprites/2.data"
+.include "sprites/3.data"
+.include "sprites/4.data"
+.include "sprites/5.data"
+.include "sprites/6.data"
+#.include "sprites/7.data"
+.include "sprites/8.data"
+.include "sprites/9.data"
+.include "sprites/tela_vitoria.data"
 
 .text
-j SETUP
-##### REGISTRADORES DISPONÃ?VEIS PARA PROCEDIMENTOS SIMULTÃ‚NEOS AO PRINT:
+j MENU
+##### REGISTRADORES DISPONIVEIS PARA PROCEDIMENTOS SIMULTÃ‚NEOS AO PRINT:
 # 		t6 (Ã© usado na movimentaÃ§Ã£o do personagem)
 #		a4
 #		a5
@@ -118,21 +140,78 @@ SETUP_MUSICA:
 		la s0,NOTAS		# define o endereï¿½o das notas
 		li a4,0			# zera o contador de notas
 		
-		j SETUP
+		#j SETUP
 		
-#MUSICA:	beq t0,s1, FIM_MUSICA	# contador chegou no final? entï¿½o  vï¿½ para FIM
-	#lw s6,0(s3)		# le o valor da nota
-	#lw s7,4(s3)		# le a duracao da nota
-	#li a7,31		# define a chamada de syscall
-	#ecall			# toca a nota
-	#mv a0,a1		# passa a duraï¿½ï¿½o da nota para a pausa
-	#li a7,32		# define a chamada de syscal 
-	#ecall			# realiza uma pausa de a0 ms
-	#addi s3,s3,8		# incrementa para o endereï¿½o da prï¿½xima nota
-	#addi a4,a4,1		# incrementa o contador de notas
-#	j MUSICA		# volta ao loop
+MUSICA:	beq t0,s1, MENU	# contador chegou no final? entï¿½o  vï¿½ para FIM
+	lw s6,0(s3)		# le o valor da nota
+	lw s7,4(s3)		# le a duracao da nota
+	li a7,31		# define a chamada de syscall
+	ecall			# toca a nota
+	mv a0,a1		# passa a duraï¿½ï¿½o da nota para a pausa
+	li a7,32		# define a chamada de syscal 
+	ecall			# realiza uma pausa de a0 ms
+	addi s3,s3,8		# incrementa para o endereï¿½o da prï¿½xima nota
+	addi a4,a4,1		# incrementa o contador de notas
+	j MUSICA		# volta ao loop
 	
 		
+		
+		
+MENU:
+	la a0, MenuTop
+	li a1, 0
+	li a2, 0
+	li a3, 0
+	call PRINT
+	li a3, 1
+	call PRINT
+Menu_loop:
+		li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
+		lw t0,0(t1)			# Le bit de Controle Teclado
+		andi t0,t0,0x0001		# mascara o bit menos significativo
+	   	beq t0,zero,RETURN   	   	# Se nï¿½o hï¿½ tecla pressionada entï¿½o vai para FIM
+	  	lw t2,4(t1)  			# le o valor da tecla tecla
+		
+		li t0,'1'
+		beq t2,t0,SETUP
+		li t0,'2'
+		beq t2,t0,SAIR
+		j Menu_loop
+SAIR:
+		li a7, 10
+		ecall
+		
+VENCEU_JOGO:	la t0, QTD_UVA
+		lbu t1, 0(t0)
+		la t0, QTD_MELANCIA
+		lbu t2, 0(t0)
+		add t1, t1, t2 # t1 = qtde de frutas ao todo
+		la t0, UVAS_COMIDAS
+		lbu t2, 0(t0)
+		la t0, MELANCIAS_COMIDAS
+		lbu t3, 0(t0)
+		add t2,t2,t3
+		beq t1, t2, TELA_VITORIA
+		ret
+		
+TELA_VITORIA:	la a0, tela_vitoria
+		mv a1, zero
+		mv a2, zero
+		mv a3, zero
+		call PRINT
+		li a3, 1
+		call PRINT
+		
+LOOP_TELA_VITORIA:	
+		li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
+		lw t0,0(t1)			# Le bit de Controle Teclado
+		andi t0,t0,0x0001		# mascara o bit menos significativo
+	   	beq t0,zero,RETURN   	   	# Se nï¿½o hï¿½ tecla pressionada entï¿½o vai para FIM
+	  	lw t2,4(t1)  			# le o valor da tecla tecla
+		
+		li t0, 's'
+		beq t2, t0, SAIR
+		j LOOP_TELA_VITORIA
 		
 SETUP:		la a0, mapa
 		li a1, 0
@@ -148,9 +227,31 @@ SETUP:		la a0, mapa
 		sw t0, 0(t1)
 		
 GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estï¿½ sendo pressionada
-		xori s3,s3,1 #alternador de frames
+
+		la t0, CONTADOR_LOOPS # incrementa o contador de loops
+		lw t1, 0(t0)
+		addi t1, t1, 1
+		sw t1, 0(t0)
 		
-						
+		call VENCEU_JOGO # verifica se o jogador venceu o jogo ou não
+		
+		la t0, QTD_UVA
+		lbu t4, 0(t0)
+		la t0, POSICAO_SORVETE
+		lh t1, 0(t0)
+		lh t2, 2(t0)
+		la t0, POSICOES_UVAS
+		call COMEU_UVA #chama o procedimento que verifica se o jogador pegou alguma fruta
+		
+		la t0, QTD_MELANCIA
+		lbu t4, 0(t0)
+		la t0, POSICAO_SORVETE
+		lh t1, 0(t0)
+		lh t2, 2(t0)
+		la t0, POSICOES_MELANCIA
+		call COMEU_M # sï¿½ verifica se comeu melancia quando nï¿½o tiverem uvas, para nï¿½o comer as melancias sem elas aparecerem
+		
+ELSE:		xori s3,s3,1 #alternador de frames			
 		li t0,0xFF200604 # alterador de frames
 		sw s3,0(t0)	
 		
@@ -171,47 +272,149 @@ GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estï¿½
 		xori a3, a3, 1
 		call PRINT
 		
+		# movimentacao dos inimigos
+		#la t4, QTD_INIMIGOS1
+		#lbu t5, 0(t4) # t5 = qtde de inimigos que tem 
+		#la s5, MOVIMENTOS_INIMIGOS1
+		#la t2, POSICOES_INIMIGOS1
+		#la s0, CONTADOR_LOOPS
+		#lw s1, 0(s0) # s1 = contador
+		#li s2, 50
+		#rem s4, s1, s2
+		#beqz s4, MOVER_INIMIGOS_1
+		#call MOVER_INIMIGOS_1	
+
+		
+		# renderização dos inimigos
+		la a0, frente_inimigo1
+		la t0, POSICOES_INIMIGOS1
+		lh a1, 0(t0)
+		lh a2, 2(t0)
+		mv a3, s3
+		xori a3, a3, 1
+		#call PRINT
+	        la t0, POSICOES_INIMIGOS1
+		addi t0, t0, 4
+		lh a1, 0(t0)
+		lh a2, 2(t0)
+		#call PRINT
+		
+		la t0, QTD_UVA
+		lbu a4, 0(t0) # armazena a quantidade de frutas em a4
+		la a0, uva1 # carrega o endereï¿½o da imagem da uva
+		la a5, POSICOES_UVAS # carrega o endereï¿½o da posiï¿½ï¿½o da uva no endereï¿½o
+		
+SPAWN_UVAS:	lh a1, 0(a5) 
+		lh a2, 2(a5) # carrega a posiï¿½ï¿½o da uva pros registradores do print
+		beqz a1, NOT_SPAWN # se a1 = 0, siginifica q a fruta foi coletada, entï¿½o nï¿½o serï¿½ desenhada
+		mv a3,s3
+		beqz a3, NOT_SPAWN # desenharemos a fruta em sï¿½ um frame para fazï¿½-la piscar
+		xori a3, a3, 1 # definiï¿½ï¿½o do frame
+		call PRINT # desenho da fruta no bitmap
+NOT_SPAWN:	addi a4, a4, -1 #subtrai o contador
+		addi a5, a5, 4 # pula as posiï¿½ï¿½es
+		
+		bnez a4, SPAWN_UVAS
+		
+		la t0, QTD_UVA
+		lb t1, 0(t0) # carrega a qtde de uvas
+		la t0, UVAS_COMIDAS
+		lb t2, 0(t0)
+		beq t1, t2, SETUP_MELANCIA # SE ainda tiver uma, pula pro gameloop, se nï¿½o, as melancias serï¿½o renderizadas
 		j GAME_LOOP
+		
+SETUP_MELANCIA:	la t0, QTD_MELANCIA
+		lbu a4, 0(t0) # armazena a quantidade de frutas em a4
+		la a0, melancia1 # carrega o endereï¿½o da imagem da uva
+		la a5, POSICOES_MELANCIA # carrega o endereï¿½o da posiï¿½ï¿½o da uva no a5
+		
+		
+SPAWN_MELANCIA:	lh a1, 0(a5) 
+		lh a2, 2(a5) # carrega a posiï¿½ï¿½o da melancia pros registradores do print
+		beqz a1, NOT_SPAWN_M # se a1 = 0, siginifica q a fruta foi coletada, entï¿½o nï¿½o serï¿½ desenhada
+		mv a3,s3
+		beqz a3, NOT_SPAWN_M # desenharemos a fruta em sï¿½ um frame para fazï¿½-la piscar
+		xori a3, a3, 1 # definiï¿½ï¿½o do frame
+		call PRINT # desenho da fruta no bitmap		
+		
+NOT_SPAWN_M:	addi a4, a4, -1 #subtrai o contador
+		addi a5, a5, 4 # pula as posiï¿½ï¿½es
+		
+		bnez a4, SPAWN_MELANCIA # se nï¿½o tiver zerado, ele volta pro loop, caso contrï¿½rio, segue o fluxo do cï¿½digo
+		j GAME_LOOP
+		
 		####reproduÃ§Ã£o da mÃºsica
 		
-		la t6,A2_intermediario #carrega o endereco A2_intermediario em t6
-		sw a2,0(t6) #salva o conteudo de a2 em t6
+#		la t6,A2_intermediario #carrega o endereco A2_intermediario em t6
+#		sw a2,0(t6) #salva o conteudo de a2 em t6
+#		
+#		li a2,68		# define o instrumento
 		
-		li a2,68		# define o instrumento
+#		la t6,A3_intermediario #carrega o endereco A3_intermediario em t6
+#		sw a3,0(t6) 		#salva o conteudo de a3 em t6
 		
-		la t6,A3_intermediario #carrega o endereco A3_intermediario em t6
-		sw a3,0(t6) 		#salva o conteudo de a3 em t6
+#		li a3,50		# define o volume
 		
-		li a3,50		# define o volume
+#		la t6,A0_intermediario #carrega o endereco A0_intermediario em t6
+#		sw a0,0(t6) #salva o conteudo de a0 em t6
+#		la t6,A1_intermediario #carrega o endereco A1_intermediario em t6
+#		sw a1,0(t6) #carrega o conteudo de a1 em t6
+#		
 		
-		la t6,A0_intermediario #carrega o endereco A0_intermediario em t6
-		sw a0,0(t6) #salva o conteudo de a0 em t6
-		la t6,A1_intermediario #carrega o endereco A1_intermediario em t6
-		sw a1,0(t6) #carrega o conteudo de a1 em t6
+#		lw a0,0(s0)		# le o valor da nota
+#		lw a1,4(s0)		# le a duracao da nota
+#		li a7,31		# define a chamada de syscall
+#		ecall			# toca a nota
 		
+#		addi s0,s0,8		# incrementa para o endereï¿½o da prï¿½xima nota
+#		addi a4,a4,1		# incrementa o contador de notas
 		
-		lw a0,0(s0)		# le o valor da nota
-		lw a1,4(s0)		# le a duracao da nota
-		li a7,31		# define a chamada de syscall
-		ecall			# toca a nota
+#		la t6,A0_intermediario #carrega o enredeco de A0_intermediario em t6
+#		lw a0,0(t6) #carrega em a0 o conteudo de t6
+#		la t6,A1_intermediario # carrega o endereco de A1_intermediario em t6
+#		lw a1,0(t6) #carrega em a0 o conteudo de t6
+#		la t6,A2_intermediario # carrega o endereco de A1_intermediario em t6
+#		lw a2,0(t6) #carrega em a0 o conteudo de t6
+#		la t6,A3_intermediario # carrega o endereco de A1_intermediario em t6
+#		lw a3,0(t6) #carrega em a0 o conteudo de t6
 		
-		addi s0,s0,8		# incrementa para o endereï¿½o da prï¿½xima nota
-		addi a4,a4,1		# incrementa o contador de notas
-		
-		la t6,A0_intermediario #carrega o enredeco de A0_intermediario em t6
-		lw a0,0(t6) #carrega em a0 o conteudo de t6
-		la t6,A1_intermediario # carrega o endereco de A1_intermediario em t6
-		lw a1,0(t6) #carrega em a0 o conteudo de t6
-		la t6,A2_intermediario # carrega o endereco de A1_intermediario em t6
-		lw a2,0(t6) #carrega em a0 o conteudo de t6
-		la t6,A3_intermediario # carrega o endereco de A1_intermediario em t6
-		lw a3,0(t6) #carrega em a0 o conteudo de t6
-		
-		beq a4,s4,SETUP_MUSICA
+#		beq a4,s4,SETUP_MUSICA
 		
 		
 		
-		j GAME_LOOP
+#		j GAME_LOOP
+			
+			
+MOVER_INIMIGOS_1: 	lbu t1, 0(s5) # carrega a direção que o boneco vai se mover em t1
+			lh t3, 2(t2) # t3 = posição y do personagem
+			
+			# 0 = sobe
+			beqz t1, SOBE
+			
+			# 1 = desce
+			addi t3, t3, 16
+			sh t3, 2(t2)
+			li t6, 224
+			beq t6, t3, TROCAR_SENTIDO1
+			j VERIFICACAO_MV1
+			
+TROCAR_SENTIDO1:	sb zero, 0(s5)
+			j VERIFICACAO_MV1
+			
+TROCAR_SENTIDO0:	li s1, 1
+			sb s1, 0(s5)
+			j VERIFICACAO_MV1
+			
+			
+SOBE:			addi t3, t3, -16 # sobe um bloco
+			sh t3, 2(t2)
+			beqz t3, TROCAR_SENTIDO0
+			
+VERIFICACAO_MV1:	addi t5, t5, -1 # diminui o contador de inimigos
+			addi s5, s5, 2 # pula pra proxima direção
+			addi t2, t2, 4 # pula para o proximo endereço
+			bnez t5, MOVER_INIMIGOS_1
+			ret
 		
 TECLA_PRESS:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
 		lw t0,0(t1)			# Le bit de Controle Teclado
@@ -229,8 +432,148 @@ TECLA_PRESS:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
 		beq t2,t0,ANDA_DIR #se a tecla pressionada for d, anda para a direita
 		li t0, ' '
 		beq t2, t0, GELO_ANIMACAO # se for espaï¿½o, mostra o bonequinho cuspindo
+		li t0, 'p'
+		beq t2, t0, PAUSE
 		
 RETURN:		ret
+
+PAUSE:		# renderizar a tela de pause
+		la a0, pause
+		li a1, 0
+		li a2, 0
+		li a3, 0
+		call PRINT
+		li a3, 1
+		call PRINT
+		
+		la a0, uva1
+		li a1, 196
+		li a2, 65
+		li a3, 0
+		call PRINT
+		li a3, 1
+		call PRINT
+		
+		la a0, melancia1
+		li  a1, 239
+		li a3, 0
+		call PRINT
+		li a3, 1
+		call PRINT
+		la t0, UVAS_COMIDAS
+		lbu t1, 0(t0)
+		la t0, MELANCIAS_COMIDAS
+		lbu t2, 0(t0)
+		add t1, t1, t2
+		mv t2, zero
+		
+		li a1, 98
+		li a2, 48
+		
+		beq t1, t2, PRINT_ZERO
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_UM
+		
+		addi t2,t2,1
+		beq t1,t2, PRINT_DOIS
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_TRES
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_QUATRO
+		
+		addi t2,t2,1
+		beq t1,t2, PRINT_CINCO
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_SEIS
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_SETE
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_OITO
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_NOVE
+		
+PRINT_ZERO:	la a0, zzero
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_UM: 	la a0, um
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_DOIS: 	la a0, dois
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_TRES: 	la a0, tres
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_QUATRO: 	la a0, quatro
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_CINCO: 	la a0, cinco
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_SEIS: 	la a0, seis
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_SETE: 
+
+PRINT_OITO: 	la a0, oito
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_NOVE: 	la a0, nove
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+		
+LOOP_PAUSE:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
+		lw t0,0(t1)			# Le bit de Controle Teclado
+		andi t0,t0,0x0001		# mascara o bit menos significativo
+	   	beq t0,zero,RETURN   	   	# Se nï¿½o hï¿½ tecla pressionada entï¿½o vai para FIM
+	  	lw t2,4(t1)  			# le o valor da tecla tecla
+		
+		li t0,'p'
+		beq t2,t0, SETUP
+		j LOOP_PAUSE
+		# colocar scores e objetivos
 
 ANDA_CIMA:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		la t0, costas1
@@ -246,7 +589,7 @@ ANDA_CIMA:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		la t0, POSICAO_SORVETE
 		lh t1, 0(t0) # t1 = posiï¿½ï¿½o x
 		lh t2, 2(t0) # t2 = posiï¿½ï¿½o y
-		addi t2, t2, -16 # pula pro bloco de CIMA
+		addi t2, t2, -16
 		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ï¿½ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
@@ -259,6 +602,19 @@ ANDA_CIMA:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		li t6, 0xe3e3e3e3
 		beq t5, t6, GAME_LOOP
 		
+		xori a3, a3, 1
+		li t3, 0xFF0
+		add t3, t3, a3
+		slli t3, t3, 20
+		add t3, t3, t1
+		li t4,320
+		mul t4, t4, t2
+		add t3, t3, t4 # t3 tem o valor do endereï¿½o do prï¿½ximo quadradinho
+		lw t5, 0(t3)
+		li t6, 0xe3e3e3e3
+		beq t5, t6, GAME_LOOP
+		xori a3, a3, 1
+		
 		#aumento do contador horizontal em 1
 		la t0, CONTADOR_VERTICAL
 		lb t1, 0(t0)
@@ -266,7 +622,6 @@ ANDA_CIMA:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		sb t1, 0(t0)
 		
 		la t0,POSICAO_SORVETE
-
 		la t1,ANTIGA_POS_SORVETE #cï¿½digo para salvar a antiga posiï¿½ï¿½o do personagem e substituï¿½la por um recorte do fundo
 		lw t2,0(t0)
 		sw t2,0(t1)
@@ -274,6 +629,14 @@ ANDA_CIMA:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		lh t1,2(t0)
 		addi t1,t1,-16
 		sh t1,2(t0)
+		
+		#efeito sonoro
+		li a0, 69
+		li a1, 50
+		li a2, 127
+		li a3, 120
+		li a7, 33
+		ecall
 		ret				# retorna
 
 ANDA_BAIXO:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
@@ -289,7 +652,7 @@ ANDA_BAIXO:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		la t0, POSICAO_SORVETE
 		lh t1, 0(t0) # t1 = posiï¿½ï¿½o x
 		lh t2, 2(t0) # t2 = posiï¿½ï¿½o y
-		addi t2, t2, 16 # pula pro bloco de baixo
+		addi t2,t2,16
 		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ï¿½ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
@@ -302,6 +665,18 @@ ANDA_BAIXO:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		li t6, 0xe3e3e3e3
 		beq t5, t6, GAME_LOOP
 		
+		xori a3, a3, 1
+		li t3, 0xFF0
+		add t3, t3, a3
+		slli t3, t3, 20
+		add t3, t3, t1
+		li t4,320
+		mul t4, t4, t2
+		add t3, t3, t4 # t3 tem o valor do endereï¿½o do prï¿½ximo quadradinho
+		lw t5, 0(t3)
+		li t6, 0xe3e3e3e3
+		beq t5, t6, GAME_LOOP
+		xori a3, a3, 1
 		#subtraï¿½ï¿½o do contador horizontal em 1
 		la t0, CONTADOR_VERTICAL
 		lb t1, 0(t0)
@@ -316,6 +691,14 @@ ANDA_BAIXO:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		lh t1,2(t0)
 		addi t1,t1,16
 		sh t1,2(t0)
+		
+		#efeito sonoro
+		li a0, 69
+		li a1, 50
+		li a2, 127
+		li a3, 120
+		li a7, 33
+		ecall
 		ret
 		
 ANDA_DIR:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
@@ -328,11 +711,11 @@ ANDA_DIR:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		li t2, 18
 		beq t1, t2, GAME_LOOP
 		
-		#verificar se na frente tem gelo ou neve
+		#verificar se na frente tem gelo ou neve ou fruta
 		la t0, POSICAO_SORVETE
 		lh t1, 0(t0) # t1 = posiï¿½ï¿½o x
 		lh t2, 2(t0) # t2 = posiï¿½ï¿½o y
-		addi t1, t1, 16 # pula pro bloco de CIMA
+		addi t1,t1,16
 		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ï¿½ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
@@ -344,6 +727,19 @@ ANDA_DIR:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		lw t5, 0(t3)
 		li t6, 0xe3e3e3e3
 		beq t5, t6, GAME_LOOP
+		
+		xori a3, a3, 1
+		li t3, 0xFF0
+		add t3, t3, a3
+		slli t3, t3, 20
+		add t3, t3, t1
+		li t4,320
+		mul t4, t4, t2
+		add t3, t3, t4 # t3 tem o valor do endereï¿½o do prï¿½ximo quadradinho
+		lw t5, 0(t3)
+		li t6, 0xe3e3e3e3
+		beq t5, t6, GAME_LOOP
+		xori a3, a3, 1
 
 		# aumentar o contador_hoizontal em 1
 		la t0, CONTADOR_HORIZONTAL
@@ -359,6 +755,14 @@ ANDA_DIR:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		lh t1,0(t0)
 		addi t1,t1,16
 		sh t1,0(t0)
+		
+		#efeito sonoro
+		li a0, 69
+		li a1, 50
+		li a2, 127
+		li a3, 120
+		li a7, 33
+		ecall
 		ret
 		
 ANDA_ESQ:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
@@ -375,7 +779,7 @@ ANDA_ESQ:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		la t0, POSICAO_SORVETE
 		lh t1, 0(t0) # t1 = posiï¿½ï¿½o x
 		lh t2, 2(t0) # t2 = posiï¿½ï¿½o y
-		addi t1, t1, -16 # pula pro bloco de CIMA
+		addi t1, t1, -16
 		# trecho do codigo que carrega o primeiro pixel do bloco pra verificar se ï¿½ gelo ou neve
 		li t3, 0xFF0
 		add t3, t3, a3
@@ -387,6 +791,19 @@ ANDA_ESQ:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		lw t5, 0(t3)
 		li t6, 0xe3e3e3e3
 		beq t5, t6, GAME_LOOP
+		
+		xori a3, a3, 1
+		li t3, 0xFF0
+		add t3, t3, a3
+		slli t3, t3, 20
+		add t3, t3, t1
+		li t4,320
+		mul t4, t4, t2
+		add t3, t3, t4 # t3 tem o valor do endereï¿½o do prï¿½ximo quadradinho
+		lw t5, 0(t3)
+		li t6, 0xe3e3e3e3
+		beq t5, t6, GAME_LOOP
+		xori a3, a3, 1
 		
 		# diminuir o contador_hoizontal em 1
 		la t0, CONTADOR_HORIZONTAL
@@ -402,6 +819,14 @@ ANDA_ESQ:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		lh t1,0(t0)
 		addi t1,t1,-16
 		sh t1,0(t0)
+		
+		#efeito sonoro
+		li a0, 69
+		li a1, 50
+		li a2, 127
+		li a3, 120
+		li a7, 33
+		ecall
 		ret
 						
 
@@ -582,7 +1007,11 @@ ANIMACAO:	# animaï¿½ï¿½o do bonequinho cuspindo o gelo
 		la t2, direita1
 		beq t1, t2, SPAWN_RIGHT
 		
-SPAWN_DOWN:	#verificar se na frente tem gelo ou neve
+SPAWN_DOWN:	la t0, CONTADOR_VERTICAL
+		lb t1, 0(t0)
+		beqz t1, GAME_LOOP # se a posiÃ§Ã£o y do personagem for igual a 0, o fluxo volta ao game_loop
+
+		#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
 		lh t1, 0(t0) # t1 = posiï¿½ï¿½o x
 		lh t2, 2(t0) # t2 = posiï¿½ï¿½o y
@@ -659,7 +1088,12 @@ LOOP_GELO_DOWN: li t6, 960 # t6 = posiï¿½ï¿½o y do final do mapa
 		addi a2, a2, 16
 		j LOOP_GELO_DOWN
 
-SPAWN_UP:	#verificar se na frente tem gelo ou neve
+SPAWN_UP:	la t0, CONTADOR_VERTICAL
+		lb t1, 0(t0)
+		li t2, 14
+		beq t1, t2, GAME_LOOP # se a posiÃ§Ã£o y do personagem for igual a 14, o fluxo volta ao game_loop
+
+		#verificar se na frente tem gelo ou neve
 		la t0, POSICAO_SORVETE
 		lh t1, 0(t0) # t1 = posiï¿½ï¿½o x
 		lh t2, 2(t0) # t2 = posiï¿½ï¿½o y
@@ -889,3 +1323,51 @@ LOOP_GELO_L: 	li t6, 16 # t6 = posiï¿½ï¿½o y do final do mapa
 		
 		addi a1, a1, -16
 		j LOOP_GELO_L
+		
+
+COMEU_UVA:	lh t3, 0(t0)
+		lh t5, 2(t0)
+		bne t1, t3, PROX_UVA # se nn for igual, pula p proxima fruta 
+		bne t2, t5, PROX_UVA
+		li s0, 0
+		sh  zero, 0(t0) # como as coordenadas sï¿½o iguais, os endereï¿½os q armazenam a 
+		sh zero, 2(t0) # localizacao da fruta sao zerados e o programa retorna ao codigo
+		
+		# aumenta a qtde de uvas q ele comeu em uma unidade
+		la t0, UVAS_COMIDAS
+		lb t1, 0(t0)
+		addi t1, t1, 1
+		sb t1, 0(t0)		
+		ret 
+		
+PROX_UVA:	addi t0, t0, 4
+		addi t4, t4, -1
+		bnez t4, COMEU_UVA # retorna ao programa se o contador tiver zerado
+		ret
+		
+COMEU_M:	la s0, UVAS_COMIDAS
+		lb s1, 0(s0)
+		la s0, QTD_UVA
+		lb s2, 0(s0)
+		bne s1, s2, RETURN # se ainda tiverem uvas, o programa retorna para o loop principal do jogo
+		
+		lh t3, 0(t0)
+		lh t5, 2(t0)
+		bne t1, t3, PROX_M # se nn for igual, pula p proxima fruta 
+		bne t2, t5, PROX_M
+		li s0, 0
+		sh  zero, 0(t0) # como as coordenadas sï¿½o iguais, os endereï¿½os q armazenam a 
+		sh zero, 2(t0) # localizacao da fruta sao zerados e o programa retorna ao codigo
+		
+		# aumenta a qtde de uvas q ele comeu em uma unidade
+		la t0, MELANCIAS_COMIDAS
+		lb t1, 0(t0)
+		addi t1, t1, 1
+		sb t1, 0(t0)		
+		ret 
+		
+PROX_M:		addi t0, t0, 4
+		addi t4, t4, -1
+		bnez t4, COMEU_M # retorna ao programa se o contador tiver zerado
+		ret
+
