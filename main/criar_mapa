@@ -64,6 +64,7 @@ BLOCOS_P_FIM: .word 0
 .include "sprites/direita_inimigo1.data"
 .include "sprites/direita_inimigo2.data"
 .include "sprites/esquerda_inimigo1.data"
+.include "sprites/esquerda_inimigo2.data"
 .include "sprites/frente_inimigo1.data"
 .include "sprites/frente_inimigo2.data"
 
@@ -86,10 +87,29 @@ POSICOES_MELANCIA: .half 48,48, 48, 96, 112, 16, 32, 32
 
 # definiï¿½ï¿½o da quantidade de inimigoa e das localizaï¿½ï¿½es de cada um
 # obs: posiï¿½ï¿½o 0(coordenada x), 0(coordenada y)
-QTD_INIMIGOS1: .byte 0
-POSICOES_INIMIGOS1: .half 0,0
+QTD_INIMIGOS1: .byte 2
+POSICOES_INIMIGOS1: .half 32,0, 256, 176
+MOVIMENTOS_INIMIGOS1: .byte 1, 0
+# movimento para cima e para baixo
+# 0 sobe
+# 1 desce
+# se o x ou o y forem iguais
 
 
+CONTADOR_LOOPS: .word 0
+.include "sprites/pause.data"
+
+# numeros
+.include "sprites/0.data"
+.include "sprites/1.data"
+.include "sprites/2.data"
+.include "sprites/3.data"
+.include "sprites/4.data"
+.include "sprites/5.data"
+.include "sprites/6.data"
+#.include "sprites/7.data"
+.include "sprites/8.data"
+.include "sprites/9.data"
 
 .text
 j MENU
@@ -176,6 +196,13 @@ SETUP:		la a0, mapa
 		sw t0, 0(t1)
 		
 GAME_LOOP:	call TECLA_PRESS #chama o procedimento que verifica se a tecla estï¿½ sendo pressionada
+
+		la t0, CONTADOR_LOOPS # incrementa o contador de loops
+		lw t1, 0(t0)
+		addi t1, t1, 1
+		sw t1, 0(t0)
+		
+		
 		
 		la t0, QTD_UVA
 		lbu t4, 0(t0)
@@ -212,6 +239,33 @@ ELSE:		xori s3,s3,1 #alternador de frames
 		lh a2,2(t0) # carrega a posicao y do sorvete para a2, que Ã© o registrador requisitado pelo procedimento "print"
 		mv a3,s3 #define o frame utilizado
 		xori a3, a3, 1
+		call PRINT
+		
+		# movimentacao dos inimigos
+		#la t4, QTD_INIMIGOS1
+		#lbu t5, 0(t4) # t5 = qtde de inimigos que tem 
+		#la s5, MOVIMENTOS_INIMIGOS1
+		#la t2, POSICOES_INIMIGOS1
+		#la s0, CONTADOR_LOOPS
+		#lw s1, 0(s0) # s1 = contador
+		#li s2, 50
+		#rem s4, s1, s2
+		#beqz s4, MOVER_INIMIGOS_1
+		#call MOVER_INIMIGOS_1	
+
+		
+		# renderização dos inimigos
+		la a0, frente_inimigo1
+		la t0, POSICOES_INIMIGOS1
+		lh a1, 0(t0)
+		lh a2, 2(t0)
+		mv a3, s3
+		xori a3, a3, 1
+		call PRINT
+	        la t0, POSICOES_INIMIGOS1
+		addi t0, t0, 4
+		lh a1, 0(t0)
+		lh a2, 2(t0)
 		call PRINT
 		
 		la t0, QTD_UVA
@@ -298,6 +352,38 @@ NOT_SPAWN_M:	addi a4, a4, -1 #subtrai o contador
 		
 		
 #		j GAME_LOOP
+			
+			
+MOVER_INIMIGOS_1: 	lbu t1, 0(s5) # carrega a direção que o boneco vai se mover em t1
+			lh t3, 2(t2) # t3 = posição y do personagem
+			
+			# 0 = sobe
+			beqz t1, SOBE
+			
+			# 1 = desce
+			addi t3, t3, 16
+			sh t3, 2(t2)
+			li t6, 224
+			beq t6, t3, TROCAR_SENTIDO1
+			j VERIFICACAO_MV1
+			
+TROCAR_SENTIDO1:	sb zero, 0(s5)
+			j VERIFICACAO_MV1
+			
+TROCAR_SENTIDO0:	li s1, 1
+			sb s1, 0(s5)
+			j VERIFICACAO_MV1
+			
+			
+SOBE:			addi t3, t3, -16 # sobe um bloco
+			sh t3, 2(t2)
+			beqz t3, TROCAR_SENTIDO0
+			
+VERIFICACAO_MV1:	addi t5, t5, -1 # diminui o contador de inimigos
+			addi s5, s5, 2 # pula pra proxima direção
+			addi t2, t2, 4 # pula para o proximo endereço
+			bnez t5, MOVER_INIMIGOS_1
+			ret
 		
 TECLA_PRESS:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
 		lw t0,0(t1)			# Le bit de Controle Teclado
@@ -315,8 +401,148 @@ TECLA_PRESS:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
 		beq t2,t0,ANDA_DIR #se a tecla pressionada for d, anda para a direita
 		li t0, ' '
 		beq t2, t0, GELO_ANIMACAO # se for espaï¿½o, mostra o bonequinho cuspindo
+		li t0, 'p'
+		beq t2, t0, PAUSE
 		
 RETURN:		ret
+
+PAUSE:		# renderizar a tela de pause
+		la a0, pause
+		li a1, 0
+		li a2, 0
+		li a3, 0
+		call PRINT
+		li a3, 1
+		call PRINT
+		
+		la a0, uva1
+		li a1, 196
+		li a2, 65
+		li a3, 0
+		call PRINT
+		li a3, 1
+		call PRINT
+		
+		la a0, melancia1
+		li  a1, 239
+		li a3, 0
+		call PRINT
+		li a3, 1
+		call PRINT
+		la t0, UVAS_COMIDAS
+		lbu t1, 0(t0)
+		la t0, MELANCIAS_COMIDAS
+		lbu t2, 0(t0)
+		add t1, t1, t2
+		mv t2, zero
+		
+		li a1, 98
+		li a2, 48
+		
+		beq t1, t2, PRINT_ZERO
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_UM
+		
+		addi t2,t2,1
+		beq t1,t2, PRINT_DOIS
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_TRES
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_QUATRO
+		
+		addi t2,t2,1
+		beq t1,t2, PRINT_CINCO
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_SEIS
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_SETE
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_OITO
+		
+		addi t2,t2,1
+		beq t1,t2,PRINT_NOVE
+		
+PRINT_ZERO:	la a0, zzero
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_UM: 	la a0, um
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_DOIS: 	la a0, dois
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_TRES: 	la a0, tres
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_QUATRO: 	la a0, quatro
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_CINCO: 	la a0, cinco
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_SEIS: 	la a0, seis
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_SETE: 
+
+PRINT_OITO: 	la a0, oito
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+
+PRINT_NOVE: 	la a0, nove
+		li a3, 0 
+		call PRINT
+		li a3, 1
+		call PRINT
+		j LOOP_PAUSE
+		
+LOOP_PAUSE:	li t1,0xFF200000	# carrega o endereï¿½o de controle do KDMMIO
+		lw t0,0(t1)			# Le bit de Controle Teclado
+		andi t0,t0,0x0001		# mascara o bit menos significativo
+	   	beq t0,zero,RETURN   	   	# Se nï¿½o hï¿½ tecla pressionada entï¿½o vai para FIM
+	  	lw t2,4(t1)  			# le o valor da tecla tecla
+		
+		li t0,'p'
+		beq t2,t0, SETUP
+		j LOOP_PAUSE
+		# colocar scores e objetivos
 
 ANDA_CIMA:	# mudanï¿½a da direï¿½ï¿½o p onde o personagem ta olhando
 		la t0, costas1
